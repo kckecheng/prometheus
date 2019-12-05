@@ -341,10 +341,10 @@ Let's take a look at the below example:
 
 After understanding the OID thoroughly, we can do calculations. E.g., IfHCInOctets unit is byte, then we can translate it into KB, MB, etc.
 
-Live Demo
+Dashboard
 ~~~~~~~~~~
 
-Demo
+.. image:: images/grafana_dashboard.png
 
 Reference
 ~~~~~~~~~~~
