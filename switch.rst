@@ -1,5 +1,3 @@
-.. contents:: Switch Performance Monitoring with snmp_exporter
-
 Switch Performance Monitoring
 ==============================
 
