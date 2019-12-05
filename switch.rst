@@ -101,3 +101,152 @@ MIB Browser
 Beside network management system (SNMP Manager), a lightweight tool called **MIB Browser** can be leveraged to explore SNMP MIB inforamtion. Below is an overview of a GUI based MIB browser from iReasoning (free to use).
 
 .. image:: images/mib_browser_overview.png
+
+snmp_exporter
+---------------
+
+Prometheus provides official SNMP support through snmp_exporter, which consist of:
+
+- exporter: collect data from managed devices through SNMP
+- generator: create configurations for exporter
+
+This document will cover both topics.
+
+generator
+~~~~~~~~~~
+
+Simply speaking, generator is the tool parsing SNMP MIBs and creating a configuration file containing specified OIDs which are mapped to indicators of Prometheus. Then exporter queries SNMP agents for those specified OIDs and map the results as counters/gauges based on the configuration file waiting for Prometheus scrapes.
+
+It is not easy to understand the story without an example, so let's do it. By the way, generator can be gotten from `here <https://github.com/prometheus/snmp_exporter/tree/master/generator>`_
+
+Consolidated MIBs
++++++++++++++++++++
+
+The public/standard MIBs(defined by RFC) contain only the basic information (OIDs) for manged devices, which are far more less than expected most of times. Each vendors, such as Cisco, will provide their extended/private MIBs to support more features (OIDs). Such MIBs can be downloaded from vendors' support site. Thanks to open source network manage system (NMS), we do not need to search and download each MIB directly, we can leverage already consolidated MIBs directly from open source NMS.
+
+LibreNMS is such a open source NMS, it consolidates MIBs from all major vendors covering switches, servers, storage, etc. For more informaiton, check `here <https://github.com/librenms/librenms>`_
+
+**The fist step of this example** is getting a copy of these consolidated MIBs, this is easy since it is on github - just clone it. After the download, we can have a check of those MIBs under directory **librenms/mib**: there exists hunders of MIBs, wonderful!
+
+Identify OIDs
+++++++++++++++
+
+The goal of using Prometheus is collecting inforamtion we care. For switch, the goal becomes collecting inforamtion for OIDs we are interested in. Before creating the configuration file with generator, we should locate these wanted OIDs.
+
+**In this example, we want to monitor Cisco switch interface throughput and overall processor and memory usage**.
+
+To locate related MIB OIDs, MIB browser is an important tool. In our example, we use the free **iReasoning MIB Browser**. After opening it, some public frequently used MIBs are already loaded automatically.
+
+1. Let's unload all existing MIBs and start from scratch to demonstrace how to perform the task
+
+   .. image:: images/mib_browser_unload.png
+
+#. Let's find the MIBs for switch interface stats
+
+   - Go to http://www.net-snmp.org/docs/mibs/
+   - Search **interface**
+   - **IF-MIB** pops up
+
+#. Load IF-MIB in MIB browser:
+
+   .. image:: images/mib_browser_ifmib.png
+
+#. After loading IF-MIB, we can see OIDs related with interfaces. But since we want to monitor Cisco switch, if Cisco provides extend/enhanced MIB for IF-MIB, it will be better since much more information can be gotten.
+#. Let's google, and **CISCO-IF-EXTENSION-MIB** can be found:
+
+   .. image:: images/mib_browser_ciscoifmib.png
+
+#. Let's unloder IF-MIB and load the CISCO-IF-EXTENSION-MIB which is available within librenms/mib/cisco
+#. It is time to find MIBs for CPU and memory stats
+#. Again, search CPU and memory with http://www.net-snmp.org/docs/mibs, but this time, no result can be found
+#. Let's google "Cisco switch cpu snmp mib" to locate the CPU usage inforamtion at first
+
+   .. image:: images/mib_browser_ciscopmib.png
+
+#. Let's load the MIB **CISCO-PROCESS-MIB** from directory librenms/mib - great, both CPU and memory inforamtion are supported from this MIB:
+
+   .. image:: images/mib_browser_ciscocpumem.png
+
+#. MIBs are ready, let's identify OIDs with the help of MIB browser:
+
+   - Interface related stats:
+
+     - ifEntry: .1.3.6.1.2.1.2.2.1
+     - ifXTable: .1.3.6.1.2.1.31.1.1
+
+   - CPU and meory related stats:
+
+     - cpmCPUTotalTable: .1.3.6.1.4.1.9.9.109.1.1.1
+
+Create generator configuration file
+++++++++++++++++++++++++++++++++++++
+
+After getting OIDs, it is required to create a configuation file for generator to define how to generate the configuration file for exporter.
+
+::
+
+  git clone https://github.com/prometheus/snmp_exporter.git
+  cd snmp_exporter/generator
+  vim generator.yml
+
+Make changes based on OIDs collected in the above section, the original generator.yml sample can be referred as the blueprint. Below is the one we are going to use:
+
+::
+
+  modules:
+    cisco_mib:
+      walk:
+        - sysUpTime
+        - interfaces
+        - ifXTable
+        - 1.3.6.1.4.1.9.9.109.1.1 # Defined within Cisco private mib CISCO-PROCESS-MIB
+      lookups:
+        - source_indexes: [ifIndex]
+          lookup: ifAlias
+        - source_indexes: [ifIndex]
+          lookup: ifDescr
+        - source_indexes: [ifIndex]
+          lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName
+      overrides:
+        ifAlias:
+          ignore: true # Lookup metric
+        ifDescr:
+          ignore: true # Lookup metric
+        ifName:
+          ignore: true # Lookup metric
+        ifType:
+          type: EnumAsInfo
+
+Create exporter configuration file
+++++++++++++++++++++++++++++++++++++
+
+Once the generator configuration file is ready, it is time to generate the configuration file for exporter:
+
+::
+
+  cd snmp_exporter/generator
+  go build
+  export MIBDIRS=../../librenms/mibs
+  ./generator generate
+  copy snmp.yml /tmp
+
+After running above commands, the exporter configuration file **snmp.yml** is generated. It is time to run the exporter.
+
+exporter
+~~~~~~~~~
+
+The exporter is responsible for collecting OIDs information and map them to Prometheus understandable data based on the configuration file (snmp.yml).
+
+Instead of building a binary from souce code, it is recommended to download the prebuilt release from `the official github repo <https://github.com/prometheus/snmp_exporter/releases>`_.
+
+After downloading it:
+
+::
+
+  tar -zxvf snmp_exporter-0.15.0.linux-amd64.tar.gz
+  cd snmp_exporter-0.15.0.linux-amd64
+  cp /tmp/snmp.yml .
+  ./snmp_exporter --web.listen-address=":8080"
+
+
+Now, snmp_exporter is running waiting for Prometheus scraping.
