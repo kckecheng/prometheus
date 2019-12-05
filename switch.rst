@@ -325,4 +325,32 @@ Now, data is ready, we can go ahead creating dashboard with Grafana.
 Grafana Dashboard
 --------------------
 
-TBD
+OID Details
+~~~~~~~~~~~~~
+
+Before digging into Grafana dashboard, we need to have a good understanding on what each OID stands for since we may need to do calculation. This task can be done with the help of MIB browser and http://oidref.com/.
+
+Let's take a look at the below example:
+
+1. OID **IfHCInOctets** is collected, we want to understand what it stands for;
+#. MIB browser will show a short description on the OID once clicked:
+
+   .. image:: images/oid_mibdesc.png
+
+#. More detailed information can be gotten with oidref:
+
+   .. image:: images/oid_refdesc.png
+
+After understanding the OID thoroughly, we can do calculations. E.g., IfHCInOctets unit is byte, then we can translate it into KB, MB, etc.
+
+Live Demo
+~~~~~~~~~~
+
+Demo
+
+Reference
+~~~~~~~~~~~
+
+- `Query Prometheus <https://prometheus.io/docs/prometheus/latest/querying/basics/>`_
+- `Grafana Templating Variables <https://grafana.com/docs/grafana/latest/reference/templating/>`_
+- `Using Prometheus in Grafana <https://grafana.com/docs/grafana/latest/features/datasources/prometheus/>`_
