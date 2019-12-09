@@ -228,6 +228,7 @@ Once the generator configuration file is ready, it is time to generate the confi
 
   cd snmp_exporter/generator
   go build
+  # export MIBDIRS=../../librenms/mibs:../../librenms/mibs/cisco
   export MIBDIRS=../../librenms/mibs
   ./generator generate
   copy snmp.yml /tmp
