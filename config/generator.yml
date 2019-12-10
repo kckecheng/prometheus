@@ -24,6 +24,31 @@ modules:
         ignore: true # Lookup metric
       ifType:
         type: EnumAsInfo
+  brocade_mib:
+    auth:
+      community: public
+    walk:
+      - sysUpTime
+      - interfaces
+      - ifXTable
+      - swFCPortTable # Defined within Brocade private mib SW-MIB
+      - swCpuOrMemoryUsage # Defined within Brocade private mib SW-MIB
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifAlias
+      - source_indexes: [ifIndex]
+        lookup: ifDescr
+      - source_indexes: [ifIndex]
+        lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName
+    overrides:
+      ifAlias:
+        ignore: true # Lookup metric
+      ifDescr:
+        ignore: true # Lookup metric
+      ifName:
+        ignore: true # Lookup metric
+      ifType:
+        type: EnumAsInfo
   dell_mib:
     auth:
       community: public
