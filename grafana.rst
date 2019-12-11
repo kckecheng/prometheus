@@ -53,6 +53,29 @@ Let's explain the data based on the same metric **unity_basic_reads**:
 
 - Advanced queries/filters can be achieved through the use of **`PromQL <https://prometheus.io/docs/prometheus/latest/querying/basics/>`_**.
 
+Add Data Source
+----------------
+
+TBD
+
+Create Dashabord
+-----------------
+
+Varaiable
+~~~~~~~~~~
+
+TBD
+
+Add Panel
+~~~~~~~~~~
+
+TBD
+
+Repeat
+~~~~~~~
+
+TBD
+
 Reference
 -----------
 
