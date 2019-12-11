@@ -51,7 +51,7 @@ Let's explain the data based on the same metric **unity_basic_reads**:
   - job: this lable is added to all exporters. It is the same as the job name as defined in prometheus.yml;
   - Additional labels can be added. Refer to `static_config and relabel_config <https://prometheus.io/docs/prometheus/latest/configuration/configuration/#static_config>`_
 
-- Advanced queries/filters can be achieved through the use of **`PromQL <https://prometheus.io/docs/prometheus/latest/querying/basics/>`_**.
+- Advanced queries/filters can be achieved through the use of `PromQL <https://prometheus.io/docs/prometheus/latest/querying/basics/>`_.
 
 Add Data Source
 ----------------
