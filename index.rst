@@ -10,7 +10,7 @@ This document will guide readers on how to get started performance monitoring wi
 
 .. toctree::
    :maxdepth: 2
-   :caption: Switch Monigoring with snmp\_exporter
+   :caption: Switch Monigoring with SNMP exporter
 
    switch
 
