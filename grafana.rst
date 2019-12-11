@@ -56,15 +56,21 @@ Let's explain the data based on the same metric **unity_basic_reads**:
 Add Data Source
 ----------------
 
-TBD
+Grafana is only responsible for displaying time series data as graphs, it does not store data but retrieve data from data sources. Before using Grafana, the first step is adding at least a data source.
+
+Grafana can use quite a lot systems as data sources, including Prometheus (our focus), Graphite, InfluxDB, etc. It is easy to add a data source: **Configuaration->Data Sources->Add Data Srouce->Prometheus->Input Inforamtion->Save & Test->Done**
 
 Create Dashabord
 -----------------
 
-Varaiable
-~~~~~~~~~~
+Grafana organizes graphs as dashboards. In other words, a dashboard is the container for holding graphs - hence a dashabord need to be created before adding any graph. The creation of a dashboard is straightfoward: **Create->Dashboard**
 
-TBD
+**Notes:** Remember to save changes by clicking **Save dashboard** on the up right corner. Otherwise, your customization effort will be lost.
+
+Varaiables
+~~~~~~~~~~~
+
+Dashboards have some special settings. The most important one is **Variables**. By defining variables, we can control the behavior of graphs within a dashboard flexsibly but not hard coded.
 
 Add Panel
 ~~~~~~~~~~
