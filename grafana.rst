@@ -19,6 +19,40 @@ Before moving forward, we should understand the relationshipt of Prometheus expo
 - Grafana leverages PromQL and its builtin query functions to filter data and display them on dashboards;
 - Grafana uses Prometheus as a kind of data source, and also support quite a lot other data sources such as ELK, InfluxDB, etc.
 
+Undetstand Prometheus Data
+----------------------------
+
+Exporter Data
+~~~~~~~~~~~~~~~
+
+Data scraped by exporters are as below:
+
+.. image:: images/exporter_data.png
+
+Let's explain the data based on the metric (counter, gauge, etc., refer to `Metrics Types <https://prometheus.io/docs/concepts/metric_types/>`_) **unity_basic_reads**:
+
+- Each metric has a name, in this example, its name is unity_basic_reads;
+- An metric may have some labels associated with it to distinguish its instances. In this example, unity_basic_reads has 2 x lables: sp, unity. Based on the label values, instances can be differentiated easily - this is important for data filter;
+- Metrics will be scraped based on the interval configured for exporters, but they won't be saved.
+
+Prometheus Data
+~~~~~~~~~~~~~~~~~
+
+Data scraped by Prometheus from exporters are as below:
+
+.. images:: images/prometheus_data.png
+
+Let's explain the data based on the same metric **unity_basic_reads**:
+
+- Query/Filter can be executed for all metrics supported by exporters. In this example, unity_basic_reads is a metric scraped from an exporter, hence we can query it from Prometheus directly;
+- Beside the labels provided by an exporter (as above), Prometheus will add several more lables. In this example, 2 x lables are added: instance, job:
+
+  - instance: this label is added to all exporters. It is the same as the **targets** configured for a scrape job;
+  - job: this lable is added to all exporters. It is the same as the job name as defined in prometheus.yml;
+  - Additional labels can be added. Refer to `static_config and relabel_config <https://prometheus.io/docs/prometheus/latest/configuration/configuration/#static_config>`_
+
+- Advanced queries/filters can be achieved through the use of **`PromQL <https://prometheus.io/docs/prometheus/latest/querying/basics/>`_**.
+
 Reference
 -----------
 
