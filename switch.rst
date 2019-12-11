@@ -1,7 +1,7 @@
 Switch Performance Monitoring
 ==============================
 
-This chapter will cover all ideas on how to monitor switch performance with the official snmp_exporter from Prometheus.
+This chapter will cover all ideas on how to enable snmp_exporter for Prometheus.
 
 SNMP Introduction
 -------------------
@@ -35,7 +35,7 @@ SNMP Agent
 
 A SNMP agent is a program that is packaged within the managed devices. Enabling agents allow agents collect the management information databases from the managed devices locally and make them available to the SNMP manager during query. These agents could be standard (e.g. Net-SNMP) or specific to a vendor (e.g. HP insight agent).
 
-The key functions of a SNMP agent is:
+The key functions of a SNMP agent is as below:
 
 - Collect management information locally on managed devices
 - Stores and retrieves management information as defined in the MIB
@@ -52,6 +52,23 @@ MIB is organized as a well defined tree structure with each leaf stands for a sp
 
 .. image:: images/mib_tree.png
 
+**OID Details**
+
+We need to have a good understanding on what each OID stands for when SNMP is used for monitoring because some calculation work may be needed for collected stats - we need understand the unit, the meaning, etc.. This task can be done with the help of MIB browser and http://oidref.com/.
+
+Let's take a look at the below example:
+
+1. OID **IfHCInOctets** is collected, we want to understand what it stands for;
+#. MIB browser will show a short description on the OID once clicked:
+
+   .. image:: images/oid_mibdesc.png
+
+#. More detailed information can be gotten with oidref:
+
+   .. image:: images/oid_refdesc.png
+
+After understanding the OID thoroughly, we can do calculations. E.g., IfHCInOctets unit is byte, then we can translate it into KB, MB, etc.
+
 SNMP Versions
 ~~~~~~~~~~~~~~~
 
@@ -61,7 +78,7 @@ There are 3 versions of SNMP protocol:
 - SNMPv2 (SNMPv2c, SNMPv2u)
 - SNMPv3
 
-The main differences are all about security, SNMPv1 is not secure enough, SNMPv3 is too strict, hence SNMPv2 are the most popular adopted deployment.
+The main differences focus on security. Simply speaking, SNMPv1 is not secure enough, SNMPv3 is too strict, hence SNMPv2 are the most popular adopted deployment.
 
 Community String
 +++++++++++++++++
@@ -105,8 +122,8 @@ snmp_exporter
 
 Prometheus provides official SNMP support through snmp_exporter, which consist of:
 
-- exporter: collect data from managed devices through SNMP
-- generator: create configurations for exporter
+- exporter: collect data from managed devices through SNMP, acts as a NMS;
+- generator: create configurations for exporter by mapping SNMP OIDs to counters, gauges which can be understood by Prometheus;
 
 This document will cover both topics.
 
@@ -120,7 +137,7 @@ It is not easy to understand the story without an example, so let's do it. By th
 Consolidated MIBs
 +++++++++++++++++++
 
-The public/standard MIBs(defined by RFC) contain only the basic information (OIDs) for manged devices, which are far more less than expected most of times. Each vendors, such as Cisco, will provide their extended/private MIBs to support more features (OIDs). Such MIBs can be downloaded from vendors' support site. Thanks to open source network manage system (NMS), we do not need to search and download each MIB directly, we can leverage already consolidated MIBs directly from open source NMS.
+The public/standard MIBs(defined by RFC) contain only the basic information (OIDs) for manged devices, which are far more less than expected most of times. Each vendor, such as Cisco, will provide their extended/private MIBs to support more features (OIDs). Such MIBs can be downloaded from vendors' support site. Thanks to open source network manage system (NMS), we do not need to search and download each MIB directly, we can leverage already consolidated MIBs directly from open source NMS.
 
 LibreNMS is such a open source NMS, it consolidates MIBs from all major vendors covering switches, servers, storage, etc. For more informaiton, check `here <https://github.com/librenms/librenms>`_
 
@@ -154,7 +171,10 @@ To locate related MIB OIDs, MIB browser is an important tool. In our example, we
 
    .. image:: images/mib_browser_ciscoifmib.png
 
-#. Let's unloder IF-MIB and load the CISCO-IF-EXTENSION-MIB which is available within librenms/mib/cisco
+#. Let's load the CISCO-IF-EXTENSION-MIB which is available within librenms/mib/cisco. After loading the MIB, more information about switch interfaces can be seen as below:
+
+   .. image:: images/mib_browser_ciscoifmibinfo.png
+
 #. It is time to find MIBs for CPU and memory stats
 #. Again, search CPU and memory with http://www.net-snmp.org/docs/mibs, but this time, no result can be found
 #. Let's google "Cisco switch cpu snmp mib" to locate the CPU usage inforamtion at first
@@ -171,6 +191,10 @@ To locate related MIB OIDs, MIB browser is an important tool. In our example, we
 
      - ifEntry: .1.3.6.1.2.1.2.2.1
      - ifXTable: .1.3.6.1.2.1.31.1.1
+
+   - Cisco private MIBs related with interface stats:
+
+     - cieIfPacketStatsEntry
 
    - CPU and meory related stats:
 
@@ -199,6 +223,7 @@ Make changes based on OIDs collected in the above section, the original generato
         - sysUpTime
         - interfaces
         - ifXTable
+        - cieIfPacketStatsEntry
         - 1.3.6.1.4.1.9.9.109.1.1 # Defined within Cisco private mib CISCO-PROCESS-MIB
       lookups:
         - source_indexes: [ifIndex]
@@ -228,8 +253,7 @@ Once the generator configuration file is ready, it is time to generate the confi
 
   cd snmp_exporter/generator
   go build
-  # export MIBDIRS=../../librenms/mibs:../../librenms/mibs/cisco
-  export MIBDIRS=../../librenms/mibs
+  export MIBDIRS=../../librenms/mibs:../../librenms/mibs/cisco
   ./generator generate
   copy snmp.yml /tmp
 
@@ -281,10 +305,6 @@ To make Prometheus scrape data from snmp_exporter, one only needs to change the 
     # - "second_rules.yml"
 
   scrape_configs:
-    - job_name: 'node_exporter'
-      static_configs:
-        - targets:
-          - 'localhost:9100'
     - job_name: 'snmp'
       static_configs:
         - targets:
@@ -305,13 +325,13 @@ To make Prometheus scrape data from snmp_exporter, one only needs to change the 
 
 - job_name: define a job name, "snmp" is used in this example;
 - targets: define the switch to collect data from with the snmp_exporter. Here, 2 x switches are defined;
-- replacement: define the address and port where the snmp_exporter itself is listening
+- replacement: define the address and port where the snmp_exporter itself is listening. Do not use "localhost:<port>" even when it works, since this will make it diffcult to distinguish endpoins on the Prometheus taget display page.
 
 After changing the configuration file, Promethes can be started directly with command "./prometheus". By default, it listens at port 9090:
 
 .. image:: images/prometheus_overview.png
 
-The data collected from snmp_exporter can be checked from **Status->Targets**:
+The endpoints of snmp_exporter can be checked from **Status->Targets**:
 
 .. image:: images/prometheus_targets.png
 
@@ -320,36 +340,3 @@ After clicking each endpoint, collected data can be reviewed:
 .. image:: images/prometheus_endpoint.png
 
 Now, data is ready, we can go ahead creating dashboard with Grafana.
-
-Grafana Dashboard
---------------------
-
-OID Details
-~~~~~~~~~~~~~
-
-Before digging into Grafana dashboard, we need to have a good understanding on what each OID stands for since we may need to do calculation. This task can be done with the help of MIB browser and http://oidref.com/.
-
-Let's take a look at the below example:
-
-1. OID **IfHCInOctets** is collected, we want to understand what it stands for;
-#. MIB browser will show a short description on the OID once clicked:
-
-   .. image:: images/oid_mibdesc.png
-
-#. More detailed information can be gotten with oidref:
-
-   .. image:: images/oid_refdesc.png
-
-After understanding the OID thoroughly, we can do calculations. E.g., IfHCInOctets unit is byte, then we can translate it into KB, MB, etc.
-
-Dashboard
-~~~~~~~~~~
-
-.. image:: images/grafana_dashboard.png
-
-Reference
-~~~~~~~~~~~
-
-- `Query Prometheus <https://prometheus.io/docs/prometheus/latest/querying/basics/>`_
-- `Grafana Templating Variables <https://grafana.com/docs/grafana/latest/reference/templating/>`_
-- `Using Prometheus in Grafana <https://grafana.com/docs/grafana/latest/features/datasources/prometheus/>`_

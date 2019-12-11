@@ -14,3 +14,8 @@ This document will guide readers on how to get started performance monitoring wi
 
    switch
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Grafana Dashboard
+
+   grafana
