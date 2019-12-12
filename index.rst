@@ -6,7 +6,7 @@
 Performance Monitoring with Prometheus
 ========================================
 
-This document will guide readers on how to get started performance monitoring with Prometheus and Grafana dashboard.
+This document will guide readers on how to get started performance monitoring with Prometheus and Grafana dashboard. The source of this document can be found `here on github <https://github.com/kckecheng/prometheus>`_.
 
 .. toctree::
    :maxdepth: 2
