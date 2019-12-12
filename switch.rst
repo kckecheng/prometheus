@@ -1,7 +1,7 @@
 Switch Performance Monitoring
 ==============================
 
-This chapter will cover all ideas on how to enable snmp_exporter for Prometheus.
+This chapter will cover all ideas on how to enable snmp_exporter. After enabling snmp_exporter, we can leverage Prometheus and Grafana to monitor our devices which support SNMP.
 
 SNMP Introduction
 -------------------

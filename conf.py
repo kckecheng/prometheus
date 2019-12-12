@@ -17,12 +17,12 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'prometheus'
+project = 'Performance Monitoring with Prometheus and Grafana'
 copyright = '2019, KC Kecheng'
 author = 'KC Kecheng'
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.0'
+release = '1.2.0'
 
 
 # -- General configuration ---------------------------------------------------

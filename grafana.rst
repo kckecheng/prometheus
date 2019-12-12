@@ -233,13 +233,37 @@ Graph actually stands for line chart in Grafana. It is used frequently to reflec
 
    .. image:: images/grafana_panel_graph.png
 
-Grouping Panels
-~~~~~~~~~~~~~~~~
+Grouping and Group Repeating
+------------------------------
 
-TBD
+While more and more panels are being added onto a dashboard, we need a mechanism to group them based on logical or other criterias in order to quick focus on the metrics we care about. In the meanwhile, we also need the functionality to repeat a set of panels over some higher level variables.
+
+For example, we have below metrics from 2 x different Unity boxes:
+
+::
+
+  unity_basic_reads{instance="10.226.68.185:9001",job="unity_exporter",sp="spa",unity="uni4235"}
+  unity_basic_reads{instance="10.226.68.185:9001",job="unity_exporter",sp="spb",unity="uni4235"}
+  unity_basic_reads{instance="10.226.68.185:9001",job="unity_exporter",sp="spa",unity="uni4236"}
+  unity_basic_reads{instance="10.226.68.185:9001",job="unity_exporter",sp="spb",unity="uni4236"}
+
+With the knowledge we learned from the previous sections, we are already able to "repeat" panels based on the "sp" label for the same Unity box. But how we can repeat the same for multiple Unit boxes (the "unity" label)? In other words, we want the same panels for uni4235 repeat automatically for uni4236.
+
+Grafana supports the requirements through the use of **Row**, which is used to group panels and repeat such groups based on variables.
+
+It is straightforward to use the function:
+
+1. Select the dashboard->Add panel-> Covert to row;
+#. Unfold the Row object, then drag panels into/outof the Row: panels get organized into groups;
+#. Fold the Row object, then itself can be dragged up/down by clicking the right end of the Row object;
+#. Hover the mouse over the Row object, then click settings. Here, we can assign a name and select the varaible we want to repeat the group of panels based on:
+
+   .. image:: images/grafana_dashboard_row1.png
+
+#. Done!
 
 Save Dashboard Settings
-~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
 A dashboard can be described as a JSON document, hence it can be saved, shared and resotred easily. To export a dashboard: select the dashboard->Share dashboard->Eport->Save to file.
 
