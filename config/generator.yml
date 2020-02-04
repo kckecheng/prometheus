@@ -3,7 +3,9 @@ modules:
     auth:
       community: public
     walk:
+      - sysDescr
       - sysUpTime
+      - sysName
       - interfaces
       - ifXTable
       - cieIfPacketStatsTable # Defined within Cisco private mib CISCO-IF-EXTENSION-MIB
@@ -28,7 +30,9 @@ modules:
     auth:
       community: public
     walk:
+      - sysDescr
       - sysUpTime
+      - sysName
       - interfaces
       - ifXTable
       - swFCPortTable # Defined within Brocade private mib SW-MIB
@@ -53,7 +57,9 @@ modules:
     auth:
       community: public
     walk:
+      - sysDescr
       - sysUpTime
+      - sysName
       - interfaces
       - ifXTable
       - dellNetIfStaticsTable # Defined within Dell private mib DELL-NETWORKING-IF-EXTENSION-MIB
