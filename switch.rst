@@ -1,7 +1,9 @@
-Switch Performance Monitoring
-==============================
+SNMP Exporter for Network Equipement
+======================================
 
-This chapter will cover all ideas on how to enable snmp_exporter. After enabling snmp_exporter, we can leverage Prometheus and Grafana to monitor our devices which support SNMP.
+Prometheus provides an official SNMP exporter, A.K.A snmp_exporter, which can be used for monitoring devices which support SNMP, such as switches, routers, firewall, etc.
+
+This chapter will cover all ideas on how to enable snmp_exporter for monitoring switches only. For other devices which support SNMP, the enablement process is common.
 
 SNMP Introduction
 -------------------
@@ -122,7 +124,7 @@ snmp_exporter
 
 Prometheus provides official SNMP support through snmp_exporter, which consist of:
 
-- exporter: collect data from managed devices through SNMP, acts as a NMS;
+- exporter: collect metrics from managed devices through SNMP, acts as a NMS;
 - generator: create configurations for exporter by mapping SNMP OIDs to counters, gauges which can be understood by Prometheus;
 
 This document will cover both topics.
@@ -220,7 +222,9 @@ Make changes based on OIDs collected in the above section, the original generato
       auth:
         community: public
       walk:
+        - sysDescr
         - sysUpTime
+        - sysName
         - interfaces
         - ifXTable
         - cieIfPacketStatsEntry
@@ -262,81 +266,56 @@ After running above commands, the exporter configuration file **snmp.yml** is ge
 exporter
 ~~~~~~~~~
 
-The exporter is responsible for collecting OIDs information and map them to Prometheus understandable data based on the configuration file (snmp.yml).
+The exporter is responsible for collecting OIDs information and map them to Prometheus understandable metrics based on the configuration file (snmp.yml).
 
-Instead of building a binary from souce code, it is recommended to download the prebuilt release from `the official github repo <https://github.com/prometheus/snmp_exporter/releases>`_.
+Let's install and run it:
 
-After downloading it:
+1. Download the latest tarball from its `github repo release page <https://github.com/prometheus/snmp_exporter/releases>`_ based on your OS (we use the same Linux server where the generator code is on);
+#. Decompress the tarball and change directory into the decompressed folder;
+#. Copy **snmp.yml** generated above by the generator to the directory **cp /tmp/snmp.yml .**;
+#. Kick started snmp_exporter as **./snmp_exporter**;
+#. That is it, snmp_exporter is up and running. It can be accessed through **http://<Exporter Server IP>:9116**;
+#. Input a switch IP and the corresponding mib name (such as cisco_mib), you should be able to see the metrics as configured in snmp.yml.
 
-::
+Configure Prometheus
+----------------------
 
-  tar -zxvf snmp_exporter-0.15.0.linux-amd64.tar.gz
-  cd snmp_exporter-0.15.0.linux-amd64
-  cp /tmp/snmp.yml .
-  ./snmp_exporter --web.listen-address=":8080"
+To make Prometheus scrape metrics from the snmp_exporter:
 
-Now, snmp_exporter is running waiting for Prometheus scraping.
+1. Modify the Promethus configuration file prometheus.yml and add below job definition:
 
-Scraping from Prometheus
---------------------------
+   ::
 
-Prometheus is easy to get started, we won't cover any detail here. Please refer to the official `get started guide <https://prometheus.io/docs/prometheus/latest/getting_started/>`_ for details.
+     - job_name: 'snmp'
+       static_configs:
+         - targets:
+           - 10.226.70.248
+           - 10.226.70.249
+       metrics_path: /snmp
+       params:
+         module: [dell_mib]
+       relabel_configs:
+         - source_labels: [__address__]
+           target_label: __param_target
+         - source_labels: [__param_target]
+           target_label: instance
+         - target_label: __address__
+           replacement: <Exporter IP>:9116 # The SNMP exporter's real hostname:port.
 
-To make Prometheus scrape data from snmp_exporter, one only needs to change the Prometheus config file, A.K.A **prometheus.yml**. Below configs are used to scrape the snmp_exporter:
+#. **Notes:**
 
-::
+   - job_name: define a job name, "snmp" is used in this example;
+   - targets: define the switches to scrape metrics from with the snmp_exporter. Here, 2 x switches are defined;
+   - replacement: define the address and port where the snmp_exporter itself is listening. Do not use "localhost:<port>" even when it works, since this will make it diffcult to distinguish endpoins on the Prometheus taget display page.
 
-  # my global config
-  global:
-    scrape_interval:     60s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-    evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
-    # scrape_timeout is set to the global default (10s).
+#. Restart Prometheus: since each Prometheus server will scrape multiple targets (exporters and pushgateway), it is not recommended to restar the whole Prometheus server process directly since it impacts all targets, instead, it is recommended to reload the configuration file only:
 
-  # Alertmanager configuration
-  alerting:
-    alertmanagers:
-    - static_configs:
-      - targets:
-        # - alertmanager:9093
+   ::
 
-  # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
-  rule_files:
-    # - "first_rules.yml"
-    # - "second_rules.yml"
+     # Find the Prometheus server process ID
+     ps -ef | grep prometheus
+     # Reload configuration file by sending SIGHUP
+     kill -s SIGHUP <prometheus process ID>
 
-  scrape_configs:
-    - job_name: 'snmp'
-      static_configs:
-        - targets:
-          - 10.228.225.202
-          - 10.228.225.204
-      metrics_path: /snmp
-      params:
-        module: [cisco_mib]
-      relabel_configs:
-        - source_labels: [__address__]
-          target_label: __param_target
-        - source_labels: [__param_target]
-          target_label: instance
-        - target_label: __address__
-          replacement: 10.226.68.185:8080 # The SNMP exporter's real hostname:port.
-
-**Notes:**
-
-- job_name: define a job name, "snmp" is used in this example;
-- targets: define the switch to collect data from with the snmp_exporter. Here, 2 x switches are defined;
-- replacement: define the address and port where the snmp_exporter itself is listening. Do not use "localhost:<port>" even when it works, since this will make it diffcult to distinguish endpoins on the Prometheus taget display page.
-
-After changing the configuration file, Promethes can be started directly with command "./prometheus". By default, it listens at port 9090:
-
-.. image:: images/prometheus_overview.png
-
-The endpoints of snmp_exporter can be checked from **Status->Targets**:
-
-.. image:: images/prometheus_targets.png
-
-After clicking each endpoint, collected data can be reviewed:
-
-.. image:: images/prometheus_endpoint.png
-
-Now, data is ready, we can go ahead creating dashboard with Grafana.
+#. If everything is fine, the newly added snmp_exporter should appear as a target under **http://<prometheus server IP>:9090/targets**;
+#. You should able to see all metrics for each switch by clicking the corresponding targets under the snmp group.

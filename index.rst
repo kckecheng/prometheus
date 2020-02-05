@@ -3,19 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Performance Monitoring with Prometheus
-========================================
+Performance Monitoring with Prometheus and Grafana
+===================================================
 
 This document will guide readers on how to get started performance monitoring with Prometheus and Grafana dashboard. The source of this document can be found `here on github <https://github.com/kckecheng/prometheus>`_.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Switch Monigoring with SNMP exporter
+   :maxdepth: 3
 
-   switch
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Grafana Dashboard
-
-   grafana
+   architecture
+   deployment
+   exporter_index
+   dashboard
+   tips
