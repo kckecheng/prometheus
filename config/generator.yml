@@ -1,5 +1,6 @@
 modules:
   cisco_mib:
+    # Cisco Switch
     auth:
       community: public
     walk:
@@ -27,6 +28,7 @@ modules:
       ifType:
         type: EnumAsInfo
   brocade_mib:
+    # Brocade Switch
     auth:
       community: public
     walk:
@@ -54,6 +56,7 @@ modules:
       ifType:
         type: EnumAsInfo
   dell_mib:
+    # Dell Switch
     auth:
       community: public
     walk:
@@ -80,3 +83,57 @@ modules:
         ignore: true # Lookup metric
       ifType:
         type: EnumAsInfo
+  euqallogic:
+    # Dell EMC Equallogic Storage Array
+    # Reference:
+    # https://github.com/ynlamy/check_snmp_dell_equallogic/blob/master/check_snmp_dell_equallogic
+    # https://www.claudiokuenzler.com/monitoring-plugins/check_equallogic.sh
+    auth:
+      community: public
+    walk:
+      - sysDescr
+      - sysUpTime
+      - sysName
+      - interfaces
+      - ifXTable
+      - 1.3.6.1.4.1.12740.5.1.7.1.1.1 # EQLVOLUME-MIB: eqliscsiVolumeIndex
+      - 1.3.6.1.4.1.12740.5.1.7.1.1.4 # EQLVOLUME-MIB: eqliscsiVolumeName
+      - 1.3.6.1.4.1.12740.5.1.7.1.1.8 # EQLVOLUME-MIB: eqliscsiVolumeSize
+      - 1.3.6.1.4.1.12740.5.1.7.1.1.9 # EQLVOLUME-MIB: eqliscsiVolumeAdminStatus - online(1), offline(2)
+      - 1.3.6.1.4.1.12740.5.1.7.34 # EQLVOLUME-MIB: eqliscsiVolumeStatisticsTable
+      - 1.3.6.1.4.1.12740.2.1.1.1.1 # EQLMEMBER-MIB: eqlMemberIndex
+      - 1.3.6.1.4.1.12740.2.1.1.1.9 # EQLMEMBER-MIB: eqlMemberName
+      # - 1.3.6.1.4.1.12740.2.1.12.1.1 # EQLMEMBER-MIB: eqlMemberNumberOfConnections
+      # - 1.3.6.1.4.1.12740.2.1.12.1.2 # EQLMEMBER-MIB: eqlMemberReadLatency
+      # - 1.3.6.1.4.1.12740.2.1.12.1.3 # EQLMEMBER-MIB: eqlMemberWriteLatency
+      # - 1.3.6.1.4.1.12740.2.1.12.1.4 # EQLMEMBER-MIB: eqlMemberReadAvgLatency
+      # - 1.3.6.1.4.1.12740.2.1.12.1.5 # EQLMEMBER-MIB: eqlMemberWriteAvgLatency
+      # - 1.3.6.1.4.1.12740.2.1.12.1.6 # EQLMEMBER-MIB: eqlMemberReadOpCount
+      # - 1.3.6.1.4.1.12740.2.1.12.1.7 # EQLMEMBER-MIB: eqlMemberWriteOpCount
+      # - 1.3.6.1.4.1.12740.2.1.12.1.8 # EQLMEMBER-MIB: eqlMemberTxData
+      # - 1.3.6.1.4.1.12740.2.1.12.1.9 # EQLMEMBER-MIB: eqlMemberRxData
+      # - 1.3.6.1.4.1.12740.2.1.12.1.10 # EQLMEMBER-MIB: eqlMemberNumberOfExtConnections
+      # - 1.3.6.1.4.1.12740.3.1.1.1.1 # EQLDISK-MIB: eqlDiskIndex
+      # - 1.3.6.1.4.1.12740.3.1.1.1.5 # EQLDISK-MIB: eqlDiskSerialNumber
+      # - 1.3.6.1.4.1.12740.3.1.1.1.8 # EQLDISK-MIB: eqlDiskStatus
+      # - 1.3.6.1.4.1.12740.3.1.1.1.9 # EQLDISK-MIB: eqlDiskErrors
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifAlias
+      - source_indexes: [ifIndex]
+        lookup: ifDescr
+      - source_indexes: [ifIndex]
+        lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName
+      - source_indexes: [eqliscsiLocalMemberId, eqliscsiVolumeIndex]
+        lookup: eqliscsiVolumeName
+    overrides:
+      ifAlias:
+        ignore: true # Lookup metric
+      ifDescr:
+        ignore: true # Lookup metric
+      ifName:
+        ignore: true # Lookup metric
+      ifType:
+        type: EnumAsInfo
+      eqliscsiVolumeName:
+        type: DisplayString
