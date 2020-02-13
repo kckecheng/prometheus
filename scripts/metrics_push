@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+'''
+A script to push vdbench output to pushgateway
+'''
+from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
+import argparse
+import re
+import signal
+import sys
+
+
+def sig_handler(signum, frame):
+    print("Exit program execution")
+    sys.exit(1)
+
+
+signal.signal(signal.SIGINT, sig_handler)
+
+
+parser = argparse.ArgumentParser(
+    usage=(
+        "push vdbench output to prometheus gateway"
+        "\n\n\tvdbench ... | metrics_push -n job1 -t raw -p localhost:8080\n\n"
+    )
+)
+parser.add_argument("-n", "--name", default="raw", help='job name, "job1" as default')
+parser.add_argument(
+    "-t",
+    "--type",
+    required=True,
+    choices=["raw", "filesystem", "fs"],
+    help="vdbench I/O type(raw/filesystem(fs for short))",
+)
+parser.add_argument(
+    "-p",
+    "--pushgateway",
+    help='Prometheus pushgateway address in format "x.x.x.x:xxxx"',
+)
+args = parser.parse_args()
+
+registry = CollectorRegistry()
+metric_names_raw = [
+    "io_rate",
+    "mb_ps",
+    "bytes",
+    "read_pct",
+    "resp_time",
+    "read_resp",
+    "write_resp",
+    "read_max",
+    "write_max",
+    "resp_stddev",
+    "q_depth",
+    "cpu_pct",
+    "cpu_sys_pct",
+]
+metric_names_fs = [
+    "req_std_ops_rate",
+    "req_std_ops_resp",
+    "cpu_total",
+    "cpu_sys",
+    "read_pct",
+    "read_rate",
+    "read_resp",
+    "write_rate",
+    "write_resp",
+    "read_mb_ps",
+    "write_mb_ps",
+    "total_mb_ps",
+    "xfer_size",
+    "mkdir_rate",
+    "mkdir_resp",
+    "rmdir_rate",
+    "rmdir_resp",
+    "create_rate",
+    "create_resp",
+    "open_rate",
+    "open_resp",
+    "close_rate",
+    "close_resp",
+    "delete_rate",
+    "delete_resp",
+]
+if args.type == 'raw':
+    names = metric_names_raw
+else:
+    names = metric_names_fs
+
+metrics = {}
+for name in names:
+    metrics.update({name: Gauge(name, name.replace("_", " "), registry=registry,)})
+
+
+pattern = r"^\d\d:\d\d:\d\d\.\d\d\d\s+?\d+?\s+?\d+?\.\d+?.*?\d+?\.\d+?$"
+#  for line in f:
+for line in sys.stdin:
+    line = line.rstrip("\r\n")
+    if re.match(pattern, line):
+        #  print(f"Python: {line}")
+        data = line.split()[2:]
+        for (name, value) in zip(names, data):
+            metrics.get(name).set(value)
+
+        #  from pprint import pprint
+        #  pprint(data)
+        print(line)
+        push_to_gateway("http://127.0.0.1:8080", job="test1", registry=registry)
