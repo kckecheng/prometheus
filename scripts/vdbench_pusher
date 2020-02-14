@@ -1,0 +1,135 @@
+#!/usr/bin/env python
+'''
+A script to push vdbench output to pushgateway
+
+Requirements:
+    - Python3
+    - pometheus_client: pip install prometheus_client
+
+Known Issues:
+    - Ctrl-C will kill the execution, but it is not graceful
+
+Notices:
+    - Has only verified the script on Linux
+'''
+from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
+import argparse
+import re
+import signal
+import socket
+import sys
+
+
+def sig_handler(signum, frame):
+    print("Exit program execution")
+    sys.exit(1)
+
+
+def args_parse():
+    '''
+    Parse command line arguments
+    '''
+    parser = argparse.ArgumentParser(
+        usage=(
+            "push vdbench output to prometheus gateway"
+            "\n\n\tvdbench ... | ./vdbench_pusher -n job1 -t raw -p localhost:8080\n\n"
+        )
+    )
+    parser.add_argument("-n", "--name", default="raw", help='job name, "job1" as default')
+    parser.add_argument(
+        "-t",
+        "--type",
+        required=True,
+        choices=["raw", "filesystem", "fs"],
+        help="vdbench I/O type(raw/filesystem(fs for short))",
+    )
+    parser.add_argument(
+        "-p",
+        "--pushgateway",
+        required=True,
+        help='Prometheus pushgateway address in format "x.x.x.x:xxxx"',
+    )
+    parser.add_argument(
+        "-s",
+        "--src",
+        default=socket.gethostname(),
+        help="The source where the script is run, FQDN is recommended. The hostname is used as default.",
+    )
+    return parser.parse_args()
+
+
+def metrics_init(job_type='raw'):
+    raw = [
+        "io_rate",
+        "mb_ps",
+        "bytes",
+        "read_pct",
+        "resp_time",
+        "read_resp",
+        "write_resp",
+        "read_max",
+        "write_max",
+        "resp_stddev",
+        "q_depth",
+        "cpu_pct",
+        "cpu_sys_pct",
+    ]
+    fs = [
+        "req_std_ops_rate",
+        "req_std_ops_resp",
+        "cpu_total",
+        "cpu_sys",
+        "read_pct",
+        "read_rate",
+        "read_resp",
+        "write_rate",
+        "write_resp",
+        "read_mb_ps",
+        "write_mb_ps",
+        "total_mb_ps",
+        "xfer_size",
+        "mkdir_rate",
+        "mkdir_resp",
+        "rmdir_rate",
+        "rmdir_resp",
+        "create_rate",
+        "create_resp",
+        "open_rate",
+        "open_resp",
+        "close_rate",
+        "close_resp",
+        "delete_rate",
+        "delete_resp",
+    ]
+
+    names = None
+    if job_type == 'raw':
+        names = raw
+    else:
+        names = fs
+
+    registry = CollectorRegistry()
+    metrics = {}
+    for name in names:
+        metrics.update({name: Gauge(name, name.replace("_", " "), ["src"], registry=registry,)})
+    return (names, metrics, registry)
+
+
+if __name__ == '__main__':
+    signal.signal(signal.SIGINT, sig_handler)
+    args = args_parse()
+    gateway = f'http://{args.pushgateway}'
+    job = args.name
+
+    names, metrics, registry = metrics_init(args.type)
+    pattern = r"^\d\d:\d\d:\d\d\.\d\d\d\s+?\d+?\s+?\d+?\.\d+?.*?\d+?\.\d+?$"
+    for line in sys.stdin:
+        line = line.rstrip("\r\n")
+        if re.match(pattern, line):
+            #  print(f"Python: {line}")
+            data = line.split()[2:]
+            for (name, value) in zip(names, data):
+                metrics.get(name).labels(src=args.src).set(value)
+            # Output the original line for reference
+            print(line)
+            push_to_gateway(gateway, job=job, registry=registry)
