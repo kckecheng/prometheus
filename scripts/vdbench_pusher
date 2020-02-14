@@ -71,8 +71,8 @@ def metrics_init(job_type='raw'):
         "write_max",
         "resp_stddev",
         "q_depth",
-        "cpu_pct",
-        "cpu_sys_pct",
+        "cpu_total",
+        "cpu_sys",
     ]
     fs = [
         "req_std_ops_rate",
@@ -111,7 +111,7 @@ def metrics_init(job_type='raw'):
     registry = CollectorRegistry()
     metrics = {}
     for name in names:
-        metrics.update({name: Gauge(name, name.replace("_", " "), ["src"], registry=registry,)})
+        metrics.update({name: Gauge(name, name.replace("_", " "), ["src", "io_type"], registry=registry,)})
     return (names, metrics, registry)
 
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
             #  print(f"Python: {line}")
             data = line.split()[2:]
             for (name, value) in zip(names, data):
-                metrics.get(name).labels(src=args.src).set(value)
+                metrics.get(name).labels(src=args.src, io_type=args.type).set(value)
             # Output the original line for reference
             print(line)
             push_to_gateway(gateway, job=job, registry=registry)
