@@ -9,8 +9,8 @@ modules:
       - sysName
       - interfaces
       - ifXTable
-      - cieIfPacketStatsTable # Defined within Cisco private mib CISCO-IF-EXTENSION-MIB
-      - 1.3.6.1.4.1.9.9.109.1.1 # Defined within Cisco private mib CISCO-PROCESS-MIB
+      - 1.3.6.1.4.1.9.9.276.1.1.1 # CISCO-IF-EXTENSION-MIB: cieIfPacketStatsTable
+      - 1.3.6.1.4.1.9.9.109.1.1 # CISCO-PROCESS-MIB: cpmCPUTotalTable
     lookups:
       - source_indexes: [ifIndex]
         lookup: ifAlias
@@ -37,8 +37,8 @@ modules:
       - sysName
       - interfaces
       - ifXTable
-      - swFCPortTable # Defined within Brocade private mib SW-MIB
-      - swCpuOrMemoryUsage # Defined within Brocade private mib SW-MIB
+      - 1.3.6.1.4.1.1588.2.1.1.1.6.2 # SW-MIB: swFCPortTable
+      - 1.3.6.1.4.1.1588.2.1.1.1.26 # SW-MIB: swCpuOrMemoryUsage
     lookups:
       - source_indexes: [ifIndex]
         lookup: ifAlias
@@ -65,8 +65,8 @@ modules:
       - sysName
       - interfaces
       - ifXTable
-      - dellNetIfStaticsTable # Defined within Dell private mib DELL-NETWORKING-IF-EXTENSION-MIB
-      - 1.3.6.1.4.1.6027.3.26.1.4.4.1 # Define within Dell private mib DELL-NETWORKING-CHASSIS-MIB
+      - 1.3.6.1.4.1.6027.3.11.1.2.1 # DELL-NETWORKING-IF-EXTENSION-MIB: dellNetIfStaticsTable
+      - 1.3.6.1.4.1.6027.3.26.1.4.4 # DELL-NETWORKING-CHASSIS-MIB: dellNetCpuUtilTable
     lookups:
       - source_indexes: [ifIndex]
         lookup: ifAlias
