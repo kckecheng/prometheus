@@ -12,7 +12,7 @@ Known Issues:
 Notices:
     - Has only verified the script on Linux
 '''
-from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
+from prometheus_client import CollectorRegistry, Gauge, push_to_gateway, delete_from_gateway
 import argparse
 import re
 import signal
@@ -21,6 +21,11 @@ import sys
 
 
 def sig_handler(signum, frame):
+    global gateway
+    global job
+    if gateway and job:
+        print(f"Delete job {job} from pushgateway {gateway}")
+        delete_from_gateway(gateway, job=job)
     print("Exit program execution")
     sys.exit(1)
 
@@ -133,3 +138,5 @@ if __name__ == '__main__':
             # Output the original line for reference
             print(line)
             push_to_gateway(gateway, job=job, registry=registry)
+    # Delete the job once it is done
+    delete_from_gateway(gateway, job=job)
