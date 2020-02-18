@@ -3,7 +3,7 @@
 A script to push vdbench output to pushgateway
 
 Requirements:
-    - Python3
+    - Python3: python3.6+
     - pometheus_client: pip install prometheus_client
 
 Notices:
@@ -11,6 +11,7 @@ Notices:
 '''
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway, delete_from_gateway
 import argparse
+import os
 import re
 import signal
 import socket
@@ -21,11 +22,18 @@ import sys
 def sig_handler(signum, frame):
     global gateway
     global job
-    if gateway and job:
-        print(f"Delete job {job} from pushgateway {gateway}")
-        delete_from_gateway(gateway, job=job)
+    delete_job(gateway, job)
     print("Exit program execution")
     sys.exit(1)
+
+
+# Delete job once it is done, otherwise, it will always shown with all metrics as 0
+def delete_job(gateway, job):
+    try:
+        delete_from_gateway(gateway, job=job)
+        print(f"Successfully delete job {job} from pushgateway {gateway}")
+    except Exception:
+        print(f"Could not delete job {job} from pushgateway {gateway}")
 
 
 def args_parse():
@@ -131,12 +139,24 @@ if __name__ == '__main__':
 
     cmd = vdbench_args.copy()
     os_type = sys.platform
+    vdbench_script = None
     if os_type == 'linux':
         cmd.insert(0, r"./vdbench")
+        vdbench_script = 'vdbench'
     elif os_type.startswith('win'):
         cmd.insert(0, r".\vdbench.bat")
+        vdbench_script = 'vdbench.bat'
     else:
         print(f"Unsupported OS type {os_type}")
+        sys.exit(1)
+
+    if not os.access(vdbench_script, os.F_OK | os.X_OK):
+        print(f"vdbench script {vdbench_script} does not exist or cannot be executed")
+        exit(1)
+
+    version = sys.version_info
+    if version.major == 2 or (version.major == 3 and version.minor < 6):
+        print(f"Python 3.6 or newer is required")
         sys.exit(1)
 
     names, metrics, registry = metrics_init(gw_args.io)
@@ -149,6 +169,11 @@ if __name__ == '__main__':
                 data = line.split()[2:]
                 for (name, value) in zip(names, data):
                     metrics.get(name).labels(src=gw_args.src, io_type=gw_args.io).set(value)
-                push_to_gateway(gateway, job=job, registry=registry)
+                try:
+                    push_to_gateway(gateway, job=job, registry=registry)
+                except Exception:
+                    print(f"Could not push job {job} metrics to gateway {gateway}")
+                    os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+                    sys.exit(1)
     # Delete the job once it is done
-    delete_from_gateway(gateway, job=job)
+    delete_job(gateway, job=job)
