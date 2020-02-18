@@ -6,9 +6,6 @@ Requirements:
     - Python3
     - pometheus_client: pip install prometheus_client
 
-Known Issues:
-    - Ctrl-C will kill the execution, but it is not graceful
-
 Notices:
     - Has only verified the script on Linux
 '''
@@ -17,6 +14,7 @@ import argparse
 import re
 import signal
 import socket
+import subprocess
 import sys
 
 
@@ -37,13 +35,14 @@ def args_parse():
     parser = argparse.ArgumentParser(
         usage=(
             "push vdbench output to prometheus gateway"
-            "\n\n\tvdbench ... | ./vdbench_pusher -n job1 -t raw -p localhost:8080\n\n"
+            "\n\n\t./vdbench_pusher -n job1 -i raw -p localhost:8080 <vdbench options ...>\n\n"
+            "\tGet Help: ./vdbench_pusher -h\n\n"
         )
     )
     parser.add_argument("-n", "--name", default="raw", help='job name, "job1" as default')
     parser.add_argument(
-        "-t",
-        "--type",
+        "-i",
+        "--io",
         required=True,
         choices=["raw", "filesystem", "fs"],
         help="vdbench I/O type(raw/filesystem(fs for short))",
@@ -60,7 +59,8 @@ def args_parse():
         default=socket.gethostname(),
         help="The source where the script is run, FQDN is recommended. The hostname is used as default.",
     )
-    return parser.parse_args()
+    #  return parser.parse_args()
+    return parser.parse_known_args()
 
 
 def metrics_init(job_type='raw'):
@@ -121,22 +121,34 @@ def metrics_init(job_type='raw'):
 
 
 if __name__ == '__main__':
+    # Capture Ctrl-C
     signal.signal(signal.SIGINT, sig_handler)
-    args = args_parse()
-    gateway = f'http://{args.pushgateway}'
-    job = args.name
+    # Capture kill
+    signal.signal(signal.SIGTERM, sig_handler)
+    (gw_args, vdbench_args) = args_parse()
+    gateway = f'http://{gw_args.pushgateway}'
+    job = gw_args.name
 
-    names, metrics, registry = metrics_init(args.type)
+    cmd = vdbench_args.copy()
+    os_type = sys.platform
+    if os_type == 'linux':
+        cmd.insert(0, r"./vdbench")
+    elif os_type.startswith('win'):
+        cmd.insert(0, r".\vdbench.bat")
+    else:
+        print(f"Unsupported OS type {os_type}")
+        sys.exit(1)
+
+    names, metrics, registry = metrics_init(gw_args.io)
     pattern = r"^\d\d:\d\d:\d\d\.\d\d\d\s+?\d+?\s+?\d+?\.\d+?.*?\d+?\.\d+?$"
-    for line in sys.stdin:
-        line = line.rstrip("\r\n")
-        if re.match(pattern, line):
-            #  print(f"Python: {line}")
-            data = line.split()[2:]
-            for (name, value) in zip(names, data):
-                metrics.get(name).labels(src=args.src, io_type=args.type).set(value)
-            # Output the original line for reference
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE) as proc:
+        for line in proc.stdout:
+            line = line.decode().rstrip("\r\n")
             print(line)
-            push_to_gateway(gateway, job=job, registry=registry)
+            if re.match(pattern, line):
+                data = line.split()[2:]
+                for (name, value) in zip(names, data):
+                    metrics.get(name).labels(src=gw_args.src, io_type=gw_args.io).set(value)
+                push_to_gateway(gateway, job=job, registry=registry)
     # Delete the job once it is done
     delete_from_gateway(gateway, job=job)
