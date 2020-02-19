@@ -25,8 +25,7 @@ def args_parse():
     parser = argparse.ArgumentParser(
         usage=(
             "Annotate all panels for a Grafana Dashboard"
-            "\n\n\t./grafana_annotate -d <dashboard name> -t <words> -g <host> -p <port> -u <user> -p <password>n\n"
-            "\tGet Help: ./grafana_annotate -h\n\n"
+            "\n\n\t./grafana_annotate -d <dashboard name> -t <words> -g <host> -u <user> -p <password> --port <port>"
         )
     )
     parser.add_argument("-d", "--dashboard", required=True, help='Grafana dashboard name')
