@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-'''
+"""
 A script to annotate all panels for a Grafana dashboard to mark the begin/end of an event
 
 Requirements:
     - Python3: python3.6+
     - requests: pip install requests
-'''
-import requests
-import urllib3
+"""
+from datetime import datetime
 import argparse
+import requests
 import sys
+import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -19,21 +20,34 @@ class GrafanaException(Exception):
 
 
 def args_parse():
-    '''
+    """
     Parse command line arguments
-    '''
+    """
     parser = argparse.ArgumentParser(
         usage=(
             "Annotate all panels for a Grafana Dashboard"
             "\n\n\t./grafana_annotate -d <dashboard name> -t <words> -g <host> -u <user> -p <password> --port <port>"
         )
     )
-    parser.add_argument("-d", "--dashboard", required=True, help='Grafana dashboard name')
-    parser.add_argument("-t", "--text", required=True, help='Annotation words')
-    parser.add_argument("-g", "--grafana", required=True, help='Grafana host')
-    parser.add_argument("--port", default=3000, help='Grafana port, 3000 as default')
-    parser.add_argument("-u", "--user", default='admin', help='Grafana user, admin as default')
-    parser.add_argument("-p", "--password", default='admin', help='Grafana password, admin as default')
+    parser.add_argument(
+        "-d", "--dashboard", required=True, help="Grafana dashboard name"
+    )
+    parser.add_argument("-m", "--message", required=True, help="Annotation message")
+    parser.add_argument("-g", "--grafana", required=True, help="Grafana host")
+    parser.add_argument("--port", default=3000, help="Grafana port, 3000 as default")
+    parser.add_argument(
+        "-u", "--user", default="admin", help="Grafana user, admin as default"
+    )
+    parser.add_argument(
+        "-p", "--password", default="admin", help="Grafana password, admin as default"
+    )
+    parser.add_argument(
+        "-t",
+        "--time",
+        help=r"Time point to add the annotation at. "
+        + r"UTC time with format '%%m/%%d/%%y %%H:%%M:%%S' is required. "
+        + r"Current UTC time will be used if not provided"
+    )
     return parser.parse_args()
 
 
@@ -114,25 +128,50 @@ class Grafana(object):
             print(f"Fail to get details of dashboard {name}")
             sys.exit(1)
 
-    def annotation_add(self, dashboard_name, text, panel_name=None):
+    def _format_time(self, timestamp):
+        try:
+            delta = datetime.strptime(timestamp, r"%m/%d/%y %H:%M:%S") - datetime.fromtimestamp(0)
+            ts = int(delta.total_seconds() * 1000)
+            return ts
+        except Exception:
+            print('Specified timestamp(-t/--time) is not valid')
+            print('Use current UTC time')
+            return None
+
+    def annotation_add(self, dashboard_name, text, timestamp=None, panel_name=None):
         uri = "/annotations"
-        dashboard = self.dashboard_get(dashboard_name).get('dashboard')
+        ts = None
+        if timestamp:
+            ts = self._format_time(timestamp)
+        dashboard = self.dashboard_get(dashboard_name).get("dashboard")
         panels = dashboard["panels"]
         if panel_name:
-            panels = [panel for panel in panels if panel['title'] == panel_name]
+            panels = [panel for panel in panels if panel["title"] == panel_name]
         for panel in panels:
-            payload = {'dashboardId': dashboard['id'], 'panelId': panel['id'], 'text': text}
+            payload = {
+                "dashboardId": dashboard["id"],
+                "panelId": panel["id"],
+                "text": text,
+            }
+            if ts is not None:
+                payload.update({'time': ts})
             try:
                 resp = self.session.post(self.base + uri, json=payload)
                 if resp.status_code != 200:
-                    print(f"Fail to annotate panel {panel['title']} on {dashboard_name}")
+                    print(
+                        f"Fail to annotate panel {panel['title']} on {dashboard_name}"
+                    )
                 else:
-                    print(f"Successfully annotate panel {panel['title']} on {dashboard_name}: {text}")
+                    print(
+                        f"Successfully annotate panel {panel['title']} on {dashboard_name}: {text}"
+                    )
             except Exception:
-                print(f"Fail to annotate panel {panel['title']} on {dashboard_name} due to internal error")
+                print(
+                    f"Fail to annotate panel {panel['title']} on {dashboard_name} due to internal error"
+                )
 
 
 if __name__ == "__main__":
     args = args_parse()
     grafana = Grafana(args.grafana, args.port, args.user, args.password)
-    grafana.annotation_add(args.dashboard, args.text)
+    grafana.annotation_add(args.dashboard, args.message, args.time)
