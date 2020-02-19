@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+'''
+A script to annotate all panels for a Grafana dashboard to mark the begin/end of an event
+
+Requirements:
+    - Python3: python3.6+
+    - requests: pip install requests
+'''
+import requests
+import urllib3
+import argparse
+import sys
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+class GrafanaException(Exception):
+    pass
+
+
+def args_parse():
+    '''
+    Parse command line arguments
+    '''
+    parser = argparse.ArgumentParser(
+        usage=(
+            "Annotate all panels for a Grafana Dashboard"
+            "\n\n\t./grafana_annotate -d <dashboard name> -t <words> -g <host> -p <port> -u <user> -p <password>n\n"
+            "\tGet Help: ./grafana_annotate -h\n\n"
+        )
+    )
+    parser.add_argument("-d", "--dashboard", required=True, help='Grafana dashboard name')
+    parser.add_argument("-t", "--text", required=True, help='Annotation words')
+    parser.add_argument("-g", "--grafana", required=True, help='Grafana host')
+    parser.add_argument("--port", default=3000, help='Grafana port, 3000 as default')
+    parser.add_argument("-u", "--user", default='admin', help='Grafana user, admin as default')
+    parser.add_argument("-p", "--password", default='admin', help='Grafana password, admin as default')
+    return parser.parse_args()
+
+
+class Grafana(object):
+    def __init__(self, host, port=3000, user="admin", password="admin"):
+        self.base = f"http://{host}:{port}/api"
+        self.host = host
+        self.port = port
+        self.user = user
+        self.password = password
+
+        s = requests.Session()
+        s.auth = (user, password)
+        s.verify = False
+        s.headers.update({"Accept": "application/json"})
+        s.headers.update({"Content-Type": "application/json"})
+        self.session = s
+
+        self._login()
+
+    def _get(self, uri):
+        try:
+            return self.session.get(self.base + uri)
+        except Exception as e:
+            raise e
+
+    def _login(self):
+        uri = "/org"
+        try:
+            self._get(uri)
+        except Exception as e:
+            print(e)
+            sys.exit(1)
+
+    def dashboards_list(self):
+        """Get a summary of dashboards"""
+        uri = "/search"
+        dashboards = []
+        try:
+            resp = self._get(uri)
+            if resp.status_code == 404:
+                msg = resp.json().get("message", None)
+                if msg:
+                    print(msg)
+                return []
+            elif resp.status_code == 200:
+                items = resp.json()
+                for item in items:
+                    if item["type"] == "dash-db":
+                        dashboards.append(item)
+                return dashboards
+            else:
+                raise GrafanaException("Unsupported response status code")
+        except Exception:
+            print("Fail to list dashboards")
+            sys.exit(1)
+
+    def dashboard_get(self, name):
+        """Get detailed dashboard configuration"""
+        target = None
+        dashboards = self.dashboards_list()
+        for dashboard in dashboards:
+            if dashboard["title"] == name:
+                target = dashboard
+                break
+        if target is None:
+            print(f"Fail to find dashboard {name}")
+            sys.exit(1)
+        try:
+            resp = self._get("/dashboards/uid/" + target["uid"])
+            if resp.status_code != 200:
+                raise GrafanaException(
+                    f"Fail to get details of dashboard with uid {target['uid']}"
+                )
+            else:
+                return resp.json()
+        except Exception:
+            print(f"Fail to get details of dashboard {name}")
+            sys.exit(1)
+
+    def annotation_add(self, dashboard_name, text, panel_name=None):
+        uri = "/annotations"
+        dashboard = self.dashboard_get(dashboard_name).get('dashboard')
+        panels = dashboard["panels"]
+        if panel_name:
+            panels = [panel for panel in panels if panel['title'] == panel_name]
+        for panel in panels:
+            payload = {'dashboardId': dashboard['id'], 'panelId': panel['id'], 'text': text}
+            try:
+                resp = self.session.post(self.base + uri, json=payload)
+                if resp.status_code != 200:
+                    print(f"Fail to annotate panel {panel['title']} on {dashboard_name}")
+                else:
+                    print(f"Successfully annotate panel {panel['title']} on {dashboard_name}: {text}")
+            except Exception:
+                print(f"Fail to annotate panel {panel['title']} on {dashboard_name} due to internal error")
+
+
+if __name__ == "__main__":
+    args = args_parse()
+    grafana = Grafana(args.grafana, args.port, args.user, args.password)
+    grafana.annotation_add(args.dashboard, args.text)
