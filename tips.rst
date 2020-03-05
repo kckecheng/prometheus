@@ -81,3 +81,21 @@ This tip shows 2 x methods to add labels.
           regex: '.+?\.11:9100'
           target_label: 'node'
           replacement: 'node2'
+
+Grafana Panel Display Tips
+----------------------------
+
+- Click the color icon "-" of a legend on a panel:
+
+  - Select the color to be used
+  - Customize the color to be used
+  - Align the legend to left/right Y axis
+
+- Click the name of a legend
+
+  - Only this legend will be displayed on the panel
+  - Click again, all legends will be dispalyed as before
+
+- Shift + Click legends: select multiple legends to display on the panel
+- Ctrl + Click legends : select multiple legends to not display
+
