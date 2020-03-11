@@ -82,8 +82,8 @@ This tip shows 2 x methods to add labels.
           target_label: 'node'
           replacement: 'node2'
 
-Grafana Panel Display Tips
-----------------------------
+Select Legends to Display on Grafana Panel
+--------------------------------------------
 
 - Click the color icon "-" of a legend on a panel:
 
@@ -99,3 +99,54 @@ Grafana Panel Display Tips
 - Shift + Click legends: select multiple legends to display on the panel
 - Ctrl + Click legends : select multiple legends to not display
 
+Graph Top N in Grafana
+------------------------
+
+PromQL **topk** will show more than expected results on Grafana panels because of `this issue <https://github.com/prometheus/prometheus/issues/586>`_.
+
+The problem can be worked around by defining a varaible containing the top N results, then filter query results with this varaible in Panel. The details can be found `here <https://www.robustperception.io/graph-top-n-time-series-in-grafana>`_.
+
+Below is a straightforward example:
+
+1. Metrics:
+
+   - disk_read_average
+
+     ::
+
+       disk_read_average{instance="192.168.10.11:9272",job="vcenter",vm_name="vm1"}
+       disk_read_average{instance="192.168.10.11:9272",job="vcenter",vm_name="vm2"}
+       ...
+       disk_read_average{instance="192.168.10.11:9272",job="vcenter",vm_name="vm100"}
+
+   - disk_write_average
+
+     ::
+
+       disk_write_average{instance="192.168.10.11:9272",job="vcenter",vm_name="vm1"}
+       disk_write_average{instance="192.168.10.11:9272",job="vcenter",vm_name="vm2"}
+       ...
+       disk_write_average{instance="192.168.10.11:9272",job="vcenter",vm_name="vm100"}
+
+#. Goal: show disk I/O (read + write) for the top 5 x VMs
+#. Define a variable (top_vm_io) which returns the top 5 x VMs
+
+   ::
+
+     # Query
+     query_result(topk(5, avg_over_time((disk_read_average + disk_write_average)[${__range_s}s:])))
+     # Regex
+     /vm_name="(.*)"/
+     # Enable "Multi-value" and "Include All option"
+
+#. Panel query
+
+   ::
+
+     disk_read_average{vm_name=~"$top_vm_io"} + disk_write_average{vm_name=~"$top_vm_io"}
+
+**Notes**:
+
+- PromQL functions avg_over_time/min_over_time/max_over_time: should be selected based on the use case;
+- __range_s is a builtin variable, refert `here <https://grafana.com/docs/grafana/latest/reference/templating/#the-range-variable>`_ for details;
+- [${__range_s}s:] is a subquery, refer `here <https://prometheus.io/docs/prometheus/latest/querying/examples/#subquery>`_ for details.
