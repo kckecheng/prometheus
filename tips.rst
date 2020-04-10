@@ -10,7 +10,7 @@ Grafana is powerful allowing end users define dashboards based on their requirem
 
 Here is an example how to import a community defined dashboard:
 
-1. Find available dashabords published by the community `here <https://grafana.com/grafana/dashboards>`_;
+1. Find available dashboards published by the community `here <https://grafana.com/grafana/dashboards>`_;
 #. E.g., we want to create a dashboard for the wmi_exporter:
 
    .. image:: images/grafana_community_dashboardsearch.png
@@ -19,7 +19,7 @@ Here is an example how to import a community defined dashboard:
 
    .. image:: images/grafana_community_dashboardid.png
 
-#. Copy the dashboard ID, then go to our dashboard GUI: Create->Import->Paste the dashboard ID->Wait for a while->Name it and select the Prometheus data souce->Import;
+#. Copy the dashboard ID, then go to our dashboard GUI: Create->Import->Paste the dashboard ID->Wait for a while->Name it and select the Prometheus data source->Import;
 #. We have a working dashboard now:
 
    .. image:: images/grafana_community_dashboardshow.png
@@ -44,7 +44,7 @@ This tip shows 2 x methods to add labels.
           labels:
             node_type: 'unity_node'
 
-- Add differnt labels by spliting targets:
+- Add different labels by splitting targets:
 
   ::
 
@@ -94,7 +94,7 @@ Select Legends to Display on Grafana Panel
 - Click the name of a legend
 
   - Only this legend will be displayed on the panel
-  - Click again, all legends will be dispalyed as before
+  - Click again, all legends will be displayed as before
 
 - Shift + Click legends: select multiple legends to display on the panel
 - Ctrl + Click legends : select multiple legends to not display
@@ -104,7 +104,7 @@ Graph Top N in Grafana
 
 PromQL **topk** will show more than expected results on Grafana panels because of `this issue <https://github.com/prometheus/prometheus/issues/586>`_.
 
-The problem can be worked around by defining a varaible containing the top N results, then filter query results with this varaible in Panel. The details can be found `here <https://www.robustperception.io/graph-top-n-time-series-in-grafana>`_.
+The problem can be worked around by defining a variable containing the top N results, then filter query results with this variable in Panel. The details can be found `here <https://www.robustperception.io/graph-top-n-time-series-in-grafana>`_.
 
 Below is a straightforward example:
 
@@ -148,5 +148,39 @@ Below is a straightforward example:
 **Notes**:
 
 - PromQL functions avg_over_time/min_over_time/max_over_time: should be selected based on the use case;
-- __range_s is a builtin variable, refert `here <https://grafana.com/docs/grafana/latest/reference/templating/#the-range-variable>`_ for details;
+- __range_s is a builtin variable, refer `here <https://grafana.com/docs/grafana/latest/reference/templating/#the-range-variable>`_ for details;
 - [${__range_s}s:] is a subquery, refer `here <https://prometheus.io/docs/prometheus/latest/querying/examples/#subquery>`_ for details.
+
+Use Telegraf as Exporters
+--------------------------
+
+`Telegraf <https://github.com/influxdata/telegraf>`_ is a part of `the TICK Stack <https://www.influxdata.com/blog/introduction-to-influxdatas-influxdb-and-tick-stack/>`_ monitoring solution. Telegraf supports collecting metrics from different sources through input plugins and shipping metrics to different destinations through output plugins.
+
+Prometheus is a supported output destination, in other words, Telegraf can be used as Prometheus exporters. It supports a large num. of input plugins, including OSs, databases, clouds, etc.
+
+Usage:
+
+- List supported input plugins:
+
+  ::
+
+    telegraf --input-list
+
+- List supported output plugins:
+
+  ::
+
+    telegraf --output-list
+
+- Generate a config with vSphere input plugin and Prometheus output plugin:
+
+  ::
+
+    telegraf --section-filter agent:inputs:outputs --input-filter vsphere --output-filter prometheus_client config | tee telegraf.conf
+
+- Run Telegraf:
+
+  ::
+
+    # After tuning the config
+    telegraf --config telegraf.conf
