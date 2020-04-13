@@ -6,6 +6,8 @@ This chapter will be used to record tips during the usage of Prometheus.
 Install Prometheus as a Systemd Service
 ----------------------------------------
 
+Configuring a systemd service to control prometheus running is much handy than running it from the CLI as an executable binary. This tip shares the common steps to create a systemd service for Prometheus.
+
 ::
 
   sudo useradd --no-create-home --shell /bin/false prometheus
@@ -223,3 +225,10 @@ Usage:
 
     # After tuning the config
     telegraf --config telegraf.conf
+
+Use Alerta to Manage Alerts
+-----------------------------
+
+Prometheus Alertmanager is a really powerful alerting management solution, however, its GUI is not suitable for daily operations. `Alerta <https://alerta.io/>`_ provides a great interface consolidating alerts for main monitoring solutions like Prometheus, Nagios, Zabbix, etc.
+
+Alerta makes use of Alertmanager which sends alerts as notifications to Alerta through webhooks. The deployment is easy and straightforward, please refer to `the official document <https://docs.alerta.io/en/latest/>`_ for details.
