@@ -3,6 +3,45 @@ Tips
 
 This chapter will be used to record tips during the usage of Prometheus.
 
+Install Prometheus as a Systemd Service
+----------------------------------------
+
+::
+
+  sudo useradd --no-create-home --shell /bin/false prometheus
+
+  tar -zxvf prometheus-xxxxxx.linux-amd64.tar.gz
+  sudo mv prometheus-xxxxxx.linux-amd64 /opt/prometheus
+  sudo mkdir /opt/prometheus/data
+  sudo chown -R prometheus:prometheus /opt/prometheus
+
+  sudo mkdir /etc/prometheus
+  sudo cp /opt/prometheus/prometheus.yml /etc/prometheus
+  sudo chown -R prometheus:prometheus /etc/prometheus
+
+  sudo cat > /etc/systemd/system/prometheus.service <<-EOF
+  [Unit]
+  Description=Prometheus
+  Wants=network-online.target
+  After=network-online.target
+
+  [Service]
+  User=prometheus
+  Group=prometheus
+  Type=simple
+  Restart=on-failure
+  ExecStart=/opt/prometheus/prometheus \
+  --config.file /etc/prometheus/prometheus.yml \
+  --storage.tsdb.path /opt/prometheus/data \
+  --storage.tsdb.retention.time 15d
+
+  [Install]
+  WantedBy=multi-user.target
+  EOF
+
+  sudo systemctl daemon-reload
+  sudo systemctl start prometheus
+
 Import Community Defined Grafana Dashboard
 --------------------------------------------
 
