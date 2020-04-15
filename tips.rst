@@ -232,3 +232,26 @@ Use Alerta to Manage Alerts
 Prometheus Alertmanager is a really powerful alerting management solution, however, its GUI is not suitable for daily operations. `Alerta <https://alerta.io/>`_ provides a great interface consolidating alerts for main monitoring solutions like Prometheus, Nagios, Zabbix, etc.
 
 Alerta makes use of Alertmanager which sends alerts as notifications to Alerta through webhooks. The deployment is easy and straightforward, please refer to `the official document <https://docs.alerta.io/en/latest/>`_ for details.
+
+Show Diagrams on Grafana Panel
+-------------------------------
+
+It is smart to show the relationships of monitored targets. A plugin named `Diagram Panel <https://grafana.com/grafana/plugins/jdbranham-diagram-panel>`_ can be used for this purpose. Below is a simple example:
+
+1. Install the plugin:
+
+   ::
+
+     pkill grafana-server
+     ./bin/grafana-cli --pluginsDir=./data/plugins plugins install jdbranham-diagram-panel
+     ./bin/grafana-server
+
+#. Add panel->Add Query->Leave the "Queries" tab as default (empty);
+#. Visualization->Diagram;
+#. Define a diagram with mermaid syntax:
+
+   - Refer to `Mermaid Flowcharts Syntax <https://mermaid-js.github.io/mermaid/#/flowchart>`_ for syntax details;
+   - Use `Mermaid Live Editor <https://mermaid-js.github.io/mermaid-live-editor/>`_ to define the chart;
+   - Copy the chart code (Mermaid markdown) and paste it to the panel;
+
+#. Done.
