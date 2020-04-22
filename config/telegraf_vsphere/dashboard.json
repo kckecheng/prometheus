@@ -1,4 +1,47 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "VAR_JOB",
+      "type": "constant",
+      "label": "Job",
+      "value": "telegraf-vsphere",
+      "description": ""
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "6.5.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -16,13 +59,13 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 63,
-  "iteration": 1587521813647,
+  "id": null,
+  "iteration": 1587521813648,
   "links": [],
   "panels": [
     {
       "content": "\n# About This Dashboard\n\nThis dashboard is the basedashboard for vSphere which covers performance for below objects:\n\n- vSphere ESXi\n- vSphere VM\n- vSphere Datastore\n\nUsers should **pick panels based on their own requirements**.\n\n# Prometheus Exporter\n\nMetrics are colleced by leveraging [telegraf](https://www.influxdata.com/time-series-platform/telegraf/) from Influxdata. A skeleton configuration file can be generated as below:\n\n```bash\n telegraf --section-filter agent:inputs:outputs --input-filter vsphere --output-filter prometheus_client config > telegraf.conf\n```\n\n# Reference\n\n- [Telegraf vSphere Input Plugin](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/vsphere)\n- [vSphere Performance Counter Reference](https://www.vmware.com/support/developer/converter-sdk/conv60_apireference/vim.PerformanceManager.html)\n- [How to convert vSphere summation counters](https://kb.vmware.com/s/article/2002181)\n- [Sample configurations](https://github.com/kckecheng/prometheus/tree/master/config/telegraf_vsphere)\n",
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 11,
         "w": 24,
@@ -39,7 +82,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -53,7 +96,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -140,7 +183,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Percent of time the virtual machine is unable to run because it is contending for access to the physical CPU(s)",
           "fill": 1,
           "fillGradient": 0,
@@ -228,7 +271,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Percentage of time that the virtual machine was ready, but could not get scheduled to run on the physical CPU.",
           "fill": 1,
           "fillGradient": 0,
@@ -316,7 +359,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Total CPU time spent in wait state.The wait total includes time spent the CPU Idle, CPU Swap Wait, and CPU I/O Wait states.",
           "fill": 1,
           "fillGradient": 0,
@@ -405,7 +448,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -419,7 +462,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -506,7 +549,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "https://www.vmware.com/support/developer/converter-sdk/conv60_apireference/memory_counters.html",
           "fill": 1,
           "fillGradient": 0,
@@ -600,7 +643,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -614,7 +657,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -711,7 +754,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -808,7 +851,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -907,7 +950,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1007,7 +1050,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1021,7 +1064,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1120,7 +1163,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1219,7 +1262,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1318,7 +1361,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1406,7 +1449,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1494,7 +1537,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1583,7 +1626,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1597,7 +1640,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1696,7 +1739,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1795,7 +1838,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1894,7 +1937,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1983,7 +2026,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1997,7 +2040,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "",
           "fill": 1,
           "fillGradient": 0,
@@ -2097,7 +2140,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "",
           "fill": 1,
           "fillGradient": 0,
@@ -2197,7 +2240,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "",
           "fill": 1,
           "fillGradient": 0,
@@ -2297,7 +2340,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "",
           "fill": 1,
           "fillGradient": 0,
@@ -2397,7 +2440,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "",
           "fill": 1,
           "fillGradient": 0,
@@ -2497,7 +2540,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "",
           "fill": 1,
           "fillGradient": 0,
@@ -2598,7 +2641,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2612,7 +2655,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -2699,7 +2742,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Percent of time the virtual machine is unable to run because it is contending for access to the physical CPU(s)",
           "fill": 1,
           "fillGradient": 0,
@@ -2787,7 +2830,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Percentage of time that the virtual machine was ready, but could not get scheduled to run on the physical CPU.",
           "fill": 1,
           "fillGradient": 0,
@@ -2875,7 +2918,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Total CPU time spent in wait state.The wait total includes time spent the CPU Idle, CPU Swap Wait, and CPU I/O Wait states.",
           "fill": 1,
           "fillGradient": 0,
@@ -2964,7 +3007,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2978,7 +3021,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3065,7 +3108,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "https://www.vmware.com/support/developer/converter-sdk/conv60_apireference/memory_counters.html",
           "fill": 1,
           "fillGradient": 0,
@@ -3159,7 +3202,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3173,7 +3216,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3270,7 +3313,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3367,7 +3410,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3467,7 +3510,7 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3481,7 +3524,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3580,7 +3623,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3679,7 +3722,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3778,7 +3821,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3885,32 +3928,26 @@
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "telegraf-vsphere",
-          "value": "telegraf-vsphere"
+          "value": "${VAR_JOB}",
+          "text": "${VAR_JOB}"
         },
         "hide": 2,
         "label": "Job",
         "name": "job",
         "options": [
           {
-            "selected": true,
-            "text": "telegraf-vsphere",
-            "value": "telegraf-vsphere"
+            "value": "${VAR_JOB}",
+            "text": "${VAR_JOB}"
           }
         ],
-        "query": "telegraf-vsphere",
+        "query": "${VAR_JOB}",
         "skipUrlSync": false,
         "type": "constant"
       },
       {
         "allValue": null,
-        "current": {
-          "selected": true,
-          "text": "10.226.68.190",
-          "value": "10.226.68.190"
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_host_cpu_usage_average{job=\"$job\"}, vcenter)",
         "hide": 0,
         "includeAll": false,
@@ -3932,12 +3969,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "selected": true,
-          "text": "dc-scale",
-          "value": "dc-scale"
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_host_cpu_usage_average{job=\"$job\",vcenter=\"$vcenter\"}, dcname)",
         "hide": 0,
         "includeAll": false,
@@ -3959,16 +3992,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "StorDur + infra_ds_KC + infra_ds_colin + infra_ds_colin_tmp",
-          "value": [
-            "StorDur",
-            "infra_ds_KC",
-            "infra_ds_colin",
-            "infra_ds_colin_tmp"
-          ]
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_host_datastore_read_average{job=\"$job\",vcenter=\"$vcenter\",dcname=\"$datacenter\"}, dsname)",
         "hide": 0,
         "includeAll": true,
@@ -3990,12 +4015,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "selected": true,
-          "text": "infra-c0",
-          "value": "infra-c0"
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_host_cpu_usage_average{job=\"$job\",vcenter=\"$vcenter\", dcname=\"$datacenter\"}, clustername)",
         "hide": 0,
         "includeAll": false,
@@ -4017,15 +4038,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "10.226.68.231 + 10.226.68.232",
-          "value": [
-            "10.226.68.231",
-            "10.226.68.232"
-          ]
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_host_cpu_usage_average{job=\"$job\",vcenter=\"$vcenter\", dcname=\"$datacenter\", clustername=\"$cluster\"}, esxhostname)",
         "hide": 0,
         "includeAll": true,
@@ -4047,15 +4061,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "naa.60060160443042000e26b45cf6c9b5da + naa.600601604430420016d7175ec5d36949",
-          "value": [
-            "naa.60060160443042000e26b45cf6c9b5da",
-            "naa.600601604430420016d7175ec5d36949"
-          ]
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_host_disk_read_average{job=\"$job\",vcenter=\"$vcenter\", dcname=\"$datacenter\", clustername=\"$cluster\",esxhostname=~\"$esxi\"}, disk)",
         "hide": 0,
         "includeAll": true,
@@ -4077,15 +4084,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "vmnic0 + vmnic1",
-          "value": [
-            "vmnic0",
-            "vmnic1"
-          ]
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_host_net_bytesTx_average{job=\"$job\",vcenter=\"$vcenter\", dcname=\"$datacenter\", clustername=\"$cluster\",esxhostname=~\"$esxi\"}, interface)",
         "hide": 0,
         "includeAll": true,
@@ -4107,13 +4107,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_host_storageAdapter_read_average{job=\"$job\",vcenter=\"$vcenter\", dcname=\"$datacenter\", clustername=\"$cluster\",esxhostname=~\"$esxi\"}, adapter)",
         "hide": 0,
         "includeAll": true,
@@ -4135,14 +4130,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "AutoDeployVcsa + elasticsearch69153",
-          "value": [
-            "AutoDeployVcsa",
-            "elasticsearch69153"
-          ]
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(vsphere_vm_cpu_usage_average{job=\"$job\",vcenter=\"$vcenter\", dcname=\"$datacenter\", clustername=\"$cluster\",esxhostname=~\"$esxi\"}, vmname)",
         "hide": 0,
         "includeAll": true,
