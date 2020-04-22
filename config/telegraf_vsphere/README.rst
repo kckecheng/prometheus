@@ -26,6 +26,6 @@ Usage
 Reference
 ----------
 
-- Telegraf vSphere Input Plugin: https://github.com/influxdata/telegraf/tree/master/plugins/inputs/vsphere
-- vSphere Performance Counters : https://www.vmware.com/support/developer/converter-sdk/conv60_apireference/vim.PerformanceManager.html
-- Covert Summation to Percentage: https://kb.vmware.com/s/article/2002181
+- `Telegraf vSphere Input Plugin <https://github.com/influxdata/telegraf/tree/master/plugins/inputs/vsphere>`_
+- `vSphere Performance Counter Reference <https://www.vmware.com/support/developer/converter-sdk/conv60_apireference/vim.PerformanceManager.html>`_
+- `How to convert vSphere summation counters <https://kb.vmware.com/s/article/2002181>`_
