@@ -61,7 +61,7 @@
   "gnetId": 3563,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1587560317644,
+  "iteration": 1587977980663,
   "links": [],
   "panels": [
     {
@@ -1810,13 +1810,217 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 44
+      },
+      "hiddenSeries": false,
+      "id": 208,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:261",
+          "alias": "/Out/",
+          "transform": "negative-Y"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg_over_time(win_net_Packets_Received_Discarded{instance=~\"$hostname\",job=\"$job\"}[30s])",
+          "interval": "",
+          "legendFormat": "{{ exported_instance }} In({{ host }})",
+          "refId": "A"
+        },
+        {
+          "expr": "avg_over_time(win_net_Packets_Outbound_Discarded{instance=\"$hostname\",job=\"$job\"}[30s])",
+          "interval": "",
+          "legendFormat": "{{ exported_instance }} Out({{ host }})",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Package Drop",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:233",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:234",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 44
+      },
+      "hiddenSeries": false,
+      "id": 209,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:261",
+          "alias": "/Out/",
+          "transform": "negative-Y"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg_over_time(win_net_Packets_Received_Errors{instance=~\"$hostname\",job=\"$job\"}[30s])",
+          "interval": "",
+          "legendFormat": "{{ exported_instance }} In({{ host }})",
+          "refId": "A"
+        },
+        {
+          "expr": "avg_over_time(win_net_Packets_Outbound_Errors{instance=\"$hostname\",job=\"$job\"}[30s])",
+          "interval": "",
+          "legendFormat": "{{ exported_instance }} Out({{ host }})",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Package Error",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:233",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:234",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "collapsed": false,
       "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 52
       },
       "id": 198,
       "panels": [],
@@ -1835,7 +2039,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 45
+        "y": 53
       },
       "hiddenSeries": false,
       "id": 200,
@@ -1931,7 +2135,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 45
+        "y": 53
       },
       "hiddenSeries": false,
       "id": 201,
@@ -2027,7 +2231,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 45
+        "y": 53
       },
       "hiddenSeries": false,
       "id": 202,
@@ -2118,7 +2322,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 61
       },
       "id": 188,
       "panels": [],
@@ -2137,7 +2341,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 54
+        "y": 62
       },
       "hiddenSeries": false,
       "id": 191,
@@ -2233,7 +2437,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 54
+        "y": 62
       },
       "hiddenSeries": false,
       "id": 192,
@@ -2329,7 +2533,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 54
+        "y": 62
       },
       "hiddenSeries": false,
       "id": 193,
@@ -2425,7 +2629,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 61
+        "y": 69
       },
       "hiddenSeries": false,
       "id": 194,
@@ -2521,7 +2725,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 61
+        "y": 69
       },
       "hiddenSeries": false,
       "id": 195,
@@ -2617,7 +2821,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 61
+        "y": 69
       },
       "hiddenSeries": false,
       "id": 196,
@@ -2786,5 +2990,5 @@
   "variables": {
     "list": []
   },
-  "version": 6
+  "version": 14
 }
