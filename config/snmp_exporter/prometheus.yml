@@ -24,7 +24,7 @@ scrape_configs:
           - 172.16.70.253
     metrics_path: /snmp
     params:
-      module: [dell_mib]
+      module: [if_mib]
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
