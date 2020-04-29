@@ -255,3 +255,13 @@ It is smart to show the relationships of monitored targets. A plugin named `Diag
    - Copy the chart code (Mermaid markdown) and paste it to the panel;
 
 #. Done.
+
+The Built-in "up" Metric
+-------------------------
+
+**up** is a built-in Prometheus metric. Each instance has a "up" metric indicates:
+
+- 1: the instance is healthy
+- 0: the instance can not be scraped
+
+It can be used to grab job and instance information while defining variables with Grafana. For more details, refer to `JOBS AND INSTANCES <https://prometheus.io/docs/concepts/jobs_instances/>`_.
