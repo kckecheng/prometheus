@@ -6,7 +6,7 @@
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
-      "pluginName": "prometheus"
+      "pluginName": "Prometheus"
     }
   ],
   "__requires": [
@@ -31,7 +31,7 @@
     {
       "type": "datasource",
       "id": "prometheus",
-      "name": "prometheus",
+      "name": "Prometheus",
       "version": "1.0.0"
     },
     {
@@ -66,7 +66,7 @@
   "gnetId": 9965,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1588143692904,
+  "iteration": 1588147650787,
   "links": [],
   "panels": [
     {
@@ -90,7 +90,7 @@
       "datasource": "${DS_PROMETHEUS}",
       "fontSize": "100%",
       "gridPos": {
-        "h": 13,
+        "h": 16,
         "w": 7,
         "x": 5,
         "y": 0
@@ -239,7 +239,7 @@
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
-        "h": 13,
+        "h": 16,
         "w": 12,
         "x": 12,
         "y": 0
@@ -333,13 +333,118 @@
     },
     {
       "cacheTimeout": null,
+      "columns": [],
+      "datasource": "${DS_PROMETHEUS}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2420,
+      "links": [],
+      "pageSize": null,
+      "pluginVersion": "6.7.2",
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "$$hashKey": "object:66",
+          "alias": "Online",
+          "align": "center",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "mappingType": 1,
+          "pattern": "Value #A",
+          "thresholds": [
+            ""
+          ],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "$$hashKey": "object:128",
+          "alias": "Total",
+          "align": "center",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Value #B",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "$$hashKey": "object:139",
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "expr": "sum (probe_success{exporter=~\"$exporter\",job=~\"$job\",instance=~\"$targets\"})",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "expr": "count(probe_success{exporter=~\"$exporter\",job=~\"$job\",instance=~\"$targets\"})",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Online/Total",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "cacheTimeout": null,
       "datasource": "${DS_PROMETHEUS}",
       "description": "",
       "gridPos": {
         "h": 5,
         "w": 5,
         "x": 0,
-        "y": 8
+        "y": 11
       },
       "id": 2418,
       "links": [],
@@ -510,5 +615,5 @@
   "variables": {
     "list": []
   },
-  "version": 44
+  "version": 12
 }
