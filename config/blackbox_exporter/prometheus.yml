@@ -1,0 +1,66 @@
+global:
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+scrape_configs:
+  - job_name: 'blackbox_http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://10.226.69.160:9090
+        - http://10.226.69.161:9090
+        - http://10.226.69.162:9090
+        - http://10.226.69.163:9090
+        - https://10.226.68.190
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 192.168.56.161:9115
+      - source_labels: [__address__]
+        target_label: exporter
+
+  - job_name: 'blackbox_icmp'
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    static_configs:
+      - targets:
+        - 10.226.68.113
+        - 10.226.68.144
+        - 10.226.68.194
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 192.168.56.161:9115
+      - source_labels: [__address__]
+        target_label: exporter
+
+  - job_name: 'blackbox_ssh'
+    metrics_path: /probe
+    params:
+      module: [ssh_banner]
+    static_configs:
+      - targets:
+        - 10.226.49.240:22
+        - 10.226.49.241:22
+        - 10.228.225.202:22
+        - 10.228.225.203:22
+        - 1.1.1.1:22
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 192.168.56.161:9115
+      - source_labels: [__address__]
+        target_label: exporter
