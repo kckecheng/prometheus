@@ -226,6 +226,16 @@ Usage:
     # After tuning the config
     telegraf --config telegraf.conf
 
+Collect Metrics with Arbitrary Scripts
+----------------------------------------
+
+Sometimes, it is not cost effective to implement a Prometheus exporter with Go/Python. For example, to collect CPU related metrics on Linux - a shell script will do the work much easier and will take less time than implementing a Prometheus exporter.
+
+Scripts are great, but it is a must to make their outputs both understandable and acceptable to Prometheus. Generally speaking, there are 2 x feasible ways:
+
+- Prometheus Pushgateway: push metrics to Prometheus Pushgateway (then metrics are collected from Pushgateway by Promtehus "pull") with any kind of scripts as long as their outputs are in line with the required format. It is recommended to be used for ephemeral and batch jobs. For more information, refer to `Prometheus Pushgateway <https://github.com/prometheus/pushgateway>`_;
+- Telegraf Exec Input Plugin: Telegraf gets the capability to collect metrics by running arbitrary commands/scripts periodically. Refer to `Exec Input Plugin <https://github.com/influxdata/telegraf/tree/master/plugins/inputs/exec>`_ for details.
+
 Use Alerta to Manage Alerts
 -----------------------------
 
