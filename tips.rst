@@ -275,3 +275,39 @@ The Built-in "up" Metric
 - 0: the instance can not be scraped
 
 It can be used to grab job and instance information while defining variables with Grafana. For more details, refer to `JOBS AND INSTANCES <https://prometheus.io/docs/concepts/jobs_instances/>`_.
+
+Scrape Interval Pitfall
+-------------------------
+
+For a single job with multiple scrapping targets, the "scrape_interval" should not be set with a too large value (the exact maximum value needs to be determined by careful tunings).
+
+The background reason needs to be clarified with an example:
+
+  ::
+
+    # Assume a blackbox_exporter job is configured with 100 x ICMP probe targets as below:
+    - job_name: 'blackbox_exporter'
+      scrape_interval: 60m
+      metrics_path: /probe
+      params:
+        module: [icmp]
+      static_configs:
+        - targets:
+            - 192.168.10.101
+            - ...
+            - 192.168.10.200
+          labels:
+            type: server
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: blacbox1.lab1.local:9115
+        - source_labels: [__address__]
+          target_label: exporter
+
+This configure works, however, PromQL (such as "probe_success" for blackbox_exporter) won't return 100 x success/fail results as expected. The reason is that the "scrape_interval" is 60 minutes, which means the job can take its time to compete the full scraping within this big time window. However, PromQL instant query only returns values which fall in a small time window comparing with the current timestamp (several minutes, may be related with PromQL resultion and step???) - although all targets have been scraped, but their results are distributed within the big time window (1 x hour in this example). When a query is run, some scraping results are far from the current timestamp and won't be included within the query results.
+
+Because of the reason just mentioned as above, the scrape interval should not be set with a huge value. The exact maximum needs to be determined by tuning the scrape interval and run PromQL accordingly until the expected behavior is gotten.
