@@ -311,3 +311,13 @@ The background reason needs to be clarified with an example:
 This configure works, however, PromQL (such as "probe_success" for blackbox_exporter) won't return 100 x success/fail results as expected. The reason is that the "scrape_interval" is 60 minutes, which means the job can take its time to compete the full scraping within this big time window. However, PromQL instant query only returns values which fall in a small time window comparing with the current timestamp (several minutes, may be related with PromQL resultion and step???) - although all targets have been scraped, but their results are distributed within the big time window (1 x hour in this example). When a query is run, some scraping results are far from the current timestamp and won't be included within the query results.
 
 Because of the reason just mentioned as above, the scrape interval should not be set with a huge value. The exact maximum needs to be determined by tuning the scrape interval and run PromQL accordingly until the expected behavior is gotten.
+
+Reload Prometheus through HTTP POST
+------------------------------------
+
+Prometheus can reload its configuration file after getting a HUP signal. In the meanwhile, the same behavior can be triggered by sending as HTTP POST as below:
+
+::
+
+  # Prometheus must be started with option "--web.enable-lifecycle"
+  curl -X POST http://<IP>:9090/-/reload
