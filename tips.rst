@@ -321,3 +321,19 @@ Prometheus can reload its configuration file after getting a HUP signal. In the 
 
   # Prometheus must be started with option "--web.enable-lifecycle"
   curl -X POST http://<IP>:9090/-/reload
+
+Add a Label with PromQL
+-------------------------
+
+PromQL can be used to add a label on the fly. This is useful for the "Outer join" transformation - make sure the fields (columns) with the same names can be referred to by different names. Refer to `Duplicate column names in table panel <https://github.com/grafana/grafana/issues/24744>`_ for the background.
+
+::
+
+  # The original metric
+  accessible{host="10.226.68.185",instance="192.168.56.10:9091",job="pushgateway",type="linux"}
+
+  # PromQL
+  label_replace(accessible, "type1", "$1","type", "(.*)" )
+
+  # The result
+  accessible{host="10.226.68.185",instance="192.168.56.10:9091",job="pushgateway",type="linux", type1="linux"}
