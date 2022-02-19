@@ -24,7 +24,7 @@ After getting a Prometheus server running, we can move forward deploying exporte
 Resources
 ----------
 
-Prometheus is easy and straightforward, but it stills need some reading work if you want to use it flexible. Here are some documents you should go through when there is enough bandwidht:
+Prometheus is easy and straightforward, but it stills need some reading work if you want to use it in a flexible way. Here are some documents you should go through when you have enough bandwidth:
 
 - `Prometheus Getting Started <https://prometheus.io/docs/prometheus/latest/getting_started/>`_
 - `Prometheus Configuration Reference <https://prometheus.io/docs/prometheus/latest/configuration/configuration/>`_
