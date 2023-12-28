@@ -56,7 +56,7 @@ Grafana can use quite a lot systems as data sources, including Prometheus (our f
 Create Dashabord
 -----------------
 
-Grafana organizes panels(each panel containing a graph) as dashboards. In other words, a dashboard is the container for holding graphs(within panels) - hence a dashabord need to be created before adding any graph. The creation of a dashboard is straightfoward: **Create->Dashboard**
+Grafana organizes panels(each panel containing a graph) as dashboards. In other words, a dashboard is the container for holding graphs(within panels) - hence a dashboard need to be created before adding any graph. The creation of a dashboard is straightfoward: **Create->Dashboard**
 
 **Notes:** Remember to save changes by clicking **Save dashboard** on the up right corner. Otherwise, your customization effort will be lost.
 
