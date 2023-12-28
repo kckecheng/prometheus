@@ -10,7 +10,7 @@ First thing first, we need to have a running Grafana server before creating any 
 
 The Grafana deployment is pretty easy, and the official document is wonderful. E.g., to deploy Grafana on CentOS, the official `Install on RPM-based Linux <https://grafana.com/docs/grafana/latest/installation/rpm/>`_ is good enough to kick started the installation. For other OSs, similar documents can be found from the same page. We won't provide any words on the installation any more.
 
-Undetstand Prometheus Metrics
+Understand Prometheus Metrics
 ------------------------------
 
 Before moving forward, we need to have basic understanding on how metrics look like from the perspective of exporters and Prometheus. We are going to show this idea by using the node_exporter we previously deployed in a previous chapter.
@@ -25,7 +25,7 @@ Metrics collected by an exporter (node_exporter in this chapter) are as below:
 Let's explain the metrics (counter, gauge, etc., refer to `Metrics Types <https://prometheus.io/docs/concepts/metric_types/>`_) with **node_disk_io_time_seconds_total** as an example:
 
 - Each metric has a name, in this example, its name is node_disk_io_time_seconds_total;
-- An metric may have some labels associated with it to distinguish its instances. In this example, node_disk_io_time_seconds_total has only one label "device". Based on the label values, instances can be differentiated easily - this is important for data filter;
+- A metric may have some labels associated with it to distinguish its instances. In this example, node_disk_io_time_seconds_total has only one label "device". Based on the label values, instances can be differentiated easily - this is important for data filter;
 - Metrics will be collected from exporters but won't be saved on exporters.
 
 Prometheus Metrics
@@ -38,10 +38,10 @@ Metrics scraped by Prometheus from an exporter (node_exporter in this chapter) a
 Let's explain the differences with the same metric **node_disk_io_time_seconds_total**:
 
 - Query/Filter can be executed for all metrics supported by exporters. In this example, node_disk_io_time_seconds_total is a metric scraped from a node_exporter, hence we can query it from Prometheus directly;
-- Beside the labels provided by an exporter (as above), Prometheus will add several more lables. In this example, 2 x lables are added: instance, job:
+- Beside the labels provided by an exporter (as above), Prometheus will add several more labels. In this example, 2 x labels are added: instance, job:
 
   - instance: this label is added to all exporters. It is the same as the **targets** configured for a scrape job;
-  - job: this lable is added to all exporters. It is the same as the job name as defined in prometheus.yml;
+  - job: this label is added to all exporters. It is the same as the job name as defined in prometheus.yml;
   - Additional labels can be added. Refer to `static_config and relabel_config <https://prometheus.io/docs/prometheus/latest/configuration/configuration/#static_config>`_
 
 - Advanced queries/filters can be achieved through the use of `PromQL <https://prometheus.io/docs/prometheus/latest/querying/basics/>`_.
@@ -51,28 +51,28 @@ Add Data Source
 
 Grafana is only responsible for displaying time series metrics as graphs(within panels), it does not store metrics but retrieve metrics from data sources. Before using Grafana, the first step is adding at least a data source.
 
-Grafana can use quite a lot systems as data sources, including Prometheus (our focus), Graphite, InfluxDB, etc. It is easy to add a data source: **Configuaration->Data Sources->Add Data Srouce->Prometheus->Input Inforamtion->Save & Test->Done**
+Grafana can use quite a lot systems as data sources, including Prometheus (our focus), Graphite, InfluxDB, etc. It is easy to add a data source: **Configuration->Data Sources->Add Data Source->Prometheus->Input Information->Save & Test->Done**
 
 Create Dashabord
 -----------------
 
-Grafana organizes panels(each panel containing a graph) as dashboards. In other words, a dashboard is the container for holding graphs(within panels) - hence a dashabord need to be created before adding any graph. The creation of a dashboard is straightfoward: **Create->Dashboard**
+Grafana organizes panels(each panel containing a graph) as dashboards. In other words, a dashboard is the container for holding graphs(within panels) - hence a dashboard need to be created before adding any graph. The creation of a dashboard is straightfoward: **Create->Dashboard**
 
 **Notes:** Remember to save changes by clicking **Save dashboard** on the up right corner. Otherwise, your customization effort will be lost.
 
-Varaiables
+Variables
 ~~~~~~~~~~~
 
 Dashboards have some special settings. The most important one is **Variables**. By defining variables, we can control the behavior of graphs within a dashboard flexibly but not hard coded.
 
 Well defined variables should focus on extracting label values from metrics' labels, and graphs (panels) can leverage these to distinguish jobs, instances, metrics, etc. The most important builtin functions for this is **label_values**. We will cover the most common usage in this section, for knowledge not covered here, please refer to `Query variable <https://grafana.com/docs/grafana/latest/features/datasources/prometheus/#query-variable>`_.
 
-Once varaibles are defined, they can be shown as choices (single or multiple selection) and graphs will change dynamically based on your chocies.
+Once variables are defined, they can be shown as choices (single or multiple selection) and graphs will change dynamically based on your choices.
 
 label_values
 ~~~~~~~~~~~~~
 
-label_values is the funcition used to grab the value(s) of label(s) and turn the result into Grafana varaibles. Let's expain it with examples:
+label_values is the funcition used to grab the value(s) of label(s) and turn the result into Grafana variables. Let's expain it with examples:
 
 1. We have a metric from Prometheus as below:
 
@@ -113,15 +113,15 @@ Once such a variable is defined and saved, a selection on the dashboard will be 
 
 **Variable Reference**
 
-We can refer to existing varaibles when we define new variables. E.g., we have defined a variable named "job", then we can refer to it while we define new variable "disk" as below:
+We can refer to existing variables when we define new variables. E.g., we have defined a variable named "job", then we can refer to it while we define new variable "disk" as below:
 
 .. image:: images/grafana_variable_refer.png
 
-Please make sure referred to variables should be defined before varaibles who refer to them.
+Please make sure referred to variables should be defined before variables who refer to them.
 
 **Multi-value and All**
 
-There are options as below while defining varaibles:
+There are options as below while defining variables:
 
 - Multi-value
 - Include All option
@@ -190,7 +190,7 @@ The most basic graph supported by Grafana is "Singlestat". It is used mainly for
      node_cpu_seconds_total{cpu="1",instance="10.226.68.144:9100",job="node_exporter",mode="system"}
      ...
 
-#. Add a panel by opening the dashboard->Add a panel: the page is as below, we can add our metric accordinlyg as the first step:
+#. Add a panel by opening the dashboard->Add a panel: the page is as below, we can add our metric accordingly as the first step:
 
    .. image:: images/grafana_panel_define1.png
 
@@ -198,7 +198,7 @@ The most basic graph supported by Grafana is "Singlestat". It is used mainly for
 
     .. image:: images/grafana_panel_define2.png
 
-#. The last step can be used to assign a name to the grapha/panel, and the repeat scenario can be set based on defined varialbes:
+#. The last step can be used to assign a name to the graph/panel, and the repeat scenario can be set based on defined variables:
 
    .. image:: images/grafana_panel_define3.png
 
@@ -273,7 +273,7 @@ It is straightforward to use the feature:
 
    .. image:: images/grafana_variable_cpumode.png
 
-#. Select the dashboard->Add panel-> Covert to row->Unfold the row;
+#. Select the dashboard->Add panel->Convert to row->Unfold the row;
 #. Add panel again, and drag the new panel into the Row: panels get organized into groups;
 #. For the newly created panel, click "Add Query" and define it as below:
 
@@ -284,7 +284,7 @@ It is straightforward to use the feature:
    .. image:: images/grafana_rowsingle.png
 
 #. Fold the Row object, then itself can be dragged up/down by clicking the right end of the Row object;
-#. Hover the mouse over the Row object, then click settings. Here, we can assign a name and select the varaible we want to repeat the group of panels based on (cpu here):
+#. Hover the mouse over the Row object, then click settings. Here, we can assign a name and select the variable we want to repeat the group of panels based on (cpu here):
 
    .. image:: images/grafana_dashboard_row1.png
 
@@ -297,7 +297,7 @@ It is straightforward to use the feature:
 Save Dashboard Settings
 ------------------------
 
-A dashboard can be described as a JSON document, hence it can be saved, shared and resotred easily. To export a dashboard: select the dashboard->Share dashboard->Eport->Save to file.
+A dashboard can be described as a JSON document, hence it can be saved, shared and restored easily. To export a dashboard: select the dashboard->Share dashboard->Export->Save to file.
 
 Reference
 -----------
