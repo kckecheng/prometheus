@@ -174,7 +174,7 @@ Once variables have been defined, we can go ahead defining graphs by adding pane
 
 .. image:: images/grafana_variable_demo.png
 
-**Singlestata**
+**Singlestat**
 
 The most basic graph supported by Grafana is "Singlestat". It is used mainly for simple metric like uptime, cpu usage, etc. Let's explain this with an example.
 
