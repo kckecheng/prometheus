@@ -60,7 +60,7 @@ Grafana organizes panels(each panel containing a graph) as dashboards. In other 
 
 **Notes:** Remember to save changes by clicking **Save dashboard** on the up right corner. Otherwise, your customization effort will be lost.
 
-Varaiables
+Variables
 ~~~~~~~~~~~
 
 Dashboards have some special settings. The most important one is **Variables**. By defining variables, we can control the behavior of graphs within a dashboard flexibly but not hard coded.
