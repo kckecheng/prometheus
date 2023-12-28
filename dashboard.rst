@@ -25,7 +25,7 @@ Metrics collected by an exporter (node_exporter in this chapter) are as below:
 Let's explain the metrics (counter, gauge, etc., refer to `Metrics Types <https://prometheus.io/docs/concepts/metric_types/>`_) with **node_disk_io_time_seconds_total** as an example:
 
 - Each metric has a name, in this example, its name is node_disk_io_time_seconds_total;
-- An metric may have some labels associated with it to distinguish its instances. In this example, node_disk_io_time_seconds_total has only one label "device". Based on the label values, instances can be differentiated easily - this is important for data filter;
+- A metric may have some labels associated with it to distinguish its instances. In this example, node_disk_io_time_seconds_total has only one label "device". Based on the label values, instances can be differentiated easily - this is important for data filter;
 - Metrics will be collected from exporters but won't be saved on exporters.
 
 Prometheus Metrics
