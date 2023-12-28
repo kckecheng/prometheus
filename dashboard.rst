@@ -67,7 +67,7 @@ Dashboards have some special settings. The most important one is **Variables**. 
 
 Well defined variables should focus on extracting label values from metrics' labels, and graphs (panels) can leverage these to distinguish jobs, instances, metrics, etc. The most important builtin functions for this is **label_values**. We will cover the most common usage in this section, for knowledge not covered here, please refer to `Query variable <https://grafana.com/docs/grafana/latest/features/datasources/prometheus/#query-variable>`_.
 
-Once variables are defined, they can be shown as choices (single or multiple selection) and graphs will change dynamically based on your chocies.
+Once variables are defined, they can be shown as choices (single or multiple selection) and graphs will change dynamically based on your choices.
 
 label_values
 ~~~~~~~~~~~~~
