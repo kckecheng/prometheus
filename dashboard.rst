@@ -67,12 +67,12 @@ Dashboards have some special settings. The most important one is **Variables**. 
 
 Well defined variables should focus on extracting label values from metrics' labels, and graphs (panels) can leverage these to distinguish jobs, instances, metrics, etc. The most important builtin functions for this is **label_values**. We will cover the most common usage in this section, for knowledge not covered here, please refer to `Query variable <https://grafana.com/docs/grafana/latest/features/datasources/prometheus/#query-variable>`_.
 
-Once varaibles are defined, they can be shown as choices (single or multiple selection) and graphs will change dynamically based on your chocies.
+Once variables are defined, they can be shown as choices (single or multiple selection) and graphs will change dynamically based on your chocies.
 
 label_values
 ~~~~~~~~~~~~~
 
-label_values is the funcition used to grab the value(s) of label(s) and turn the result into Grafana varaibles. Let's expain it with examples:
+label_values is the funcition used to grab the value(s) of label(s) and turn the result into Grafana variables. Let's expain it with examples:
 
 1. We have a metric from Prometheus as below:
 
@@ -113,15 +113,15 @@ Once such a variable is defined and saved, a selection on the dashboard will be 
 
 **Variable Reference**
 
-We can refer to existing varaibles when we define new variables. E.g., we have defined a variable named "job", then we can refer to it while we define new variable "disk" as below:
+We can refer to existing variables when we define new variables. E.g., we have defined a variable named "job", then we can refer to it while we define new variable "disk" as below:
 
 .. image:: images/grafana_variable_refer.png
 
-Please make sure referred to variables should be defined before varaibles who refer to them.
+Please make sure referred to variables should be defined before variables who refer to them.
 
 **Multi-value and All**
 
-There are options as below while defining varaibles:
+There are options as below while defining variables:
 
 - Multi-value
 - Include All option
@@ -284,7 +284,7 @@ It is straightforward to use the feature:
    .. image:: images/grafana_rowsingle.png
 
 #. Fold the Row object, then itself can be dragged up/down by clicking the right end of the Row object;
-#. Hover the mouse over the Row object, then click settings. Here, we can assign a name and select the varaible we want to repeat the group of panels based on (cpu here):
+#. Hover the mouse over the Row object, then click settings. Here, we can assign a name and select the variable we want to repeat the group of panels based on (cpu here):
 
    .. image:: images/grafana_dashboard_row1.png
 
