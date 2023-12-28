@@ -190,7 +190,7 @@ The most basic graph supported by Grafana is "Singlestat". It is used mainly for
      node_cpu_seconds_total{cpu="1",instance="10.226.68.144:9100",job="node_exporter",mode="system"}
      ...
 
-#. Add a panel by opening the dashboard->Add a panel: the page is as below, we can add our metric accordinlyg as the first step:
+#. Add a panel by opening the dashboard->Add a panel: the page is as below, we can add our metric accordingly as the first step:
 
    .. image:: images/grafana_panel_define1.png
 
