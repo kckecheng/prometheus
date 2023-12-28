@@ -273,7 +273,7 @@ It is straightforward to use the feature:
 
    .. image:: images/grafana_variable_cpumode.png
 
-#. Select the dashboard->Add panel-> Covert to row->Unfold the row;
+#. Select the dashboard->Add panel->Convert to row->Unfold the row;
 #. Add panel again, and drag the new panel into the Row: panels get organized into groups;
 #. For the newly created panel, click "Add Query" and define it as below:
 
