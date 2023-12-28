@@ -297,7 +297,7 @@ It is straightforward to use the feature:
 Save Dashboard Settings
 ------------------------
 
-A dashboard can be described as a JSON document, hence it can be saved, shared and resotred easily. To export a dashboard: select the dashboard->Share dashboard->Eport->Save to file.
+A dashboard can be described as a JSON document, hence it can be saved, shared and resotred easily. To export a dashboard: select the dashboard->Share dashboard->Export->Save to file.
 
 Reference
 -----------
