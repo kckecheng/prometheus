@@ -51,7 +51,7 @@ Add Data Source
 
 Grafana is only responsible for displaying time series metrics as graphs(within panels), it does not store metrics but retrieve metrics from data sources. Before using Grafana, the first step is adding at least a data source.
 
-Grafana can use quite a lot systems as data sources, including Prometheus (our focus), Graphite, InfluxDB, etc. It is easy to add a data source: **Configuaration->Data Sources->Add Data Source->Prometheus->Input Information->Save & Test->Done**
+Grafana can use quite a lot systems as data sources, including Prometheus (our focus), Graphite, InfluxDB, etc. It is easy to add a data source: **Configuration->Data Sources->Add Data Source->Prometheus->Input Information->Save & Test->Done**
 
 Create Dashabord
 -----------------
