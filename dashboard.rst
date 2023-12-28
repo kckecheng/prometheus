@@ -38,10 +38,10 @@ Metrics scraped by Prometheus from an exporter (node_exporter in this chapter) a
 Let's explain the differences with the same metric **node_disk_io_time_seconds_total**:
 
 - Query/Filter can be executed for all metrics supported by exporters. In this example, node_disk_io_time_seconds_total is a metric scraped from a node_exporter, hence we can query it from Prometheus directly;
-- Beside the labels provided by an exporter (as above), Prometheus will add several more lables. In this example, 2 x lables are added: instance, job:
+- Beside the labels provided by an exporter (as above), Prometheus will add several more labels. In this example, 2 x labels are added: instance, job:
 
   - instance: this label is added to all exporters. It is the same as the **targets** configured for a scrape job;
-  - job: this lable is added to all exporters. It is the same as the job name as defined in prometheus.yml;
+  - job: this label is added to all exporters. It is the same as the job name as defined in prometheus.yml;
   - Additional labels can be added. Refer to `static_config and relabel_config <https://prometheus.io/docs/prometheus/latest/configuration/configuration/#static_config>`_
 
 - Advanced queries/filters can be achieved through the use of `PromQL <https://prometheus.io/docs/prometheus/latest/querying/basics/>`_.
