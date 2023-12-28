@@ -10,7 +10,7 @@ First thing first, we need to have a running Grafana server before creating any 
 
 The Grafana deployment is pretty easy, and the official document is wonderful. E.g., to deploy Grafana on CentOS, the official `Install on RPM-based Linux <https://grafana.com/docs/grafana/latest/installation/rpm/>`_ is good enough to kick started the installation. For other OSs, similar documents can be found from the same page. We won't provide any words on the installation any more.
 
-Undetstand Prometheus Metrics
+Understand Prometheus Metrics
 ------------------------------
 
 Before moving forward, we need to have basic understanding on how metrics look like from the perspective of exporters and Prometheus. We are going to show this idea by using the node_exporter we previously deployed in a previous chapter.
