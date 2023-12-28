@@ -198,7 +198,7 @@ The most basic graph supported by Grafana is "Singlestat". It is used mainly for
 
     .. image:: images/grafana_panel_define2.png
 
-#. The last step can be used to assign a name to the grapha/panel, and the repeat scenario can be set based on defined varialbes:
+#. The last step can be used to assign a name to the grapha/panel, and the repeat scenario can be set based on defined variables:
 
    .. image:: images/grafana_panel_define3.png
 
